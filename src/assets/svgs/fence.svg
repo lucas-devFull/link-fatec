@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="25" height="24" viewBox="0 0 25 24" stroke="currentColor" fill="none">
+<path d="M5.66675 7V17" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M19.6667 17V7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M20.6667 21H18.6667C18.1147 21 17.6667 20.552 17.6667 20V18C17.6667 17.448 18.1147 17 18.6667 17H20.6667C21.2187 17 21.6667 17.448 21.6667 18V20C21.6667 20.552 21.2187 21 20.6667 21Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M6.66675 21H4.66675C4.11475 21 3.66675 20.552 3.66675 20V18C3.66675 17.448 4.11475 17 4.66675 17H6.66675C7.21875 17 7.66675 17.448 7.66675 18V20C7.66675 20.552 7.21875 21 6.66675 21Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M20.6667 7H18.6667C18.1147 7 17.6667 6.552 17.6667 6V4C17.6667 3.448 18.1147 3 18.6667 3H20.6667C21.2187 3 21.6667 3.448 21.6667 4V6C21.6667 6.552 21.2187 7 20.6667 7Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M6.66675 7H4.66675C4.11475 7 3.66675 6.552 3.66675 6V4C3.66675 3.448 4.11475 3 4.66675 3H6.66675C7.21875 3 7.66675 3.448 7.66675 4V6C7.66675 6.552 7.21875 7 6.66675 7Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M7.66675 19H17.6667" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M17.6667 5H7.66675" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
