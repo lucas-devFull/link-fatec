@@ -1,13 +1,26 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import axios, { LoginIn, TokenProps } from '../services/Api';
+import axios from '../services/Api';
 import PropTypes from 'prop-types';
+import { Store } from 'react-notifications-component';
+import { redirect } from 'react-router-dom';
 
+type dataUser = {
+    login_type: string | number;
+    name: string;
+    id: number;
+};
+interface DataLogin {
+    token: {
+        access_token: string;
+    };
+    data: dataUser;
+}
 interface IAuthContext {
     logged: boolean;
     setLogged: React.Dispatch<React.SetStateAction<boolean>>;
-    user: Record<string, string> | null;
-    signIn(email: string, password: string): Promise<boolean>;
-    signOut(): void;
+    user: dataUser | null;
+    signIn(dataLogin: DataLogin, callback: () => void): void;
+    signOut(callback?: () => void): void;
 }
 
 const AuthContext = createContext<IAuthContext>({} as IAuthContext);
@@ -17,7 +30,7 @@ export const setAxiosToken = (token: string): void => {
 };
 
 const AuthProvider = ({ children }: any) => {
-    const [user, setUser] = useState<Record<string, string> | null>(null);
+    const [user, setUser] = useState<dataUser | null>(null);
     const [logged, setLogged] = useState<boolean>(false);
 
     useEffect(() => {
@@ -27,32 +40,40 @@ const AuthProvider = ({ children }: any) => {
                 const token = JSON.parse(storagedToken);
                 setAxiosToken(token.token);
                 setLogged(true);
-            } catch (error) {}
+            } catch (error) {
+                redirect('/');
+            }
         }
     }, []);
 
-    const signIn = async (email: string, password: string) => {
-        // let token: TokenProps;
-        // try {
-        //     token = JSON.parse(localStorage.getItem(`token`) || ``);
-        // } catch (error) {
-        //     token = {
-        //         access_token: '',
-        //     };
-        //     // token = await LoginIn(email, password);
-        // }
-        // debugger;
-        // if (token) {
-        //     setLogged(true);
-        //     return true;
-        //     // localStorage.setItem('@fulltrack:user', JSON.stringify(user));
-        // }
+    const signIn = async (dataLogin: DataLogin, callback: () => void) => {
+        Store.addNotification({
+            message: 'Login Efetuado com sucesso',
+            type: 'success',
+            insert: 'top',
+            container: 'top-right',
+            animationIn: ['animated', 'fadeIn'],
+            animationOut: ['animated', 'fadeOut'],
+            dismiss: {
+                duration: 2000,
+                onScreen: true,
+            },
+            onRemoval: () => {
+                localStorage.setItem('token', JSON.stringify(dataLogin));
+                setAxiosToken(dataLogin.token.access_token);
+                setLogged(true);
+                setUser(dataLogin.data);
+                callback();
+            },
+        });
         return false;
     };
 
-    const signOut = () => {
+    const signOut = (callback: () => void) => {
         setUser(null);
         setLogged(false);
+        localStorage.clear();
+        callback();
     };
 
     return (

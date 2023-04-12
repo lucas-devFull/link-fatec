@@ -52,10 +52,10 @@ export const getRefreshToken = async () => {
 instance.interceptors.response.use(
     (res) => res,
     (err: AxiosError) => {
-        const { setLogged } = useAuth();
+        const { signOut } = useAuth();
 
         if (err && err.response && err.response.status === 401) {
-            setLogged(false);
+            signOut();
         }
     },
 );

@@ -9,11 +9,12 @@ type EmptyStateProps = {
     >;
     title: string;
     message: string;
+    style?: React.CSSProperties;
 };
 
-const EmptyState = ({ icon: Icon, title, message }: EmptyStateProps): JSX.Element => {
+const EmptyState = ({ icon: Icon, title, message, style }: EmptyStateProps): JSX.Element => {
     return (
-        <ContainerEmptyState>
+        <ContainerEmptyState style={style}>
             <Icon />
             <span>{title}</span>
             <p>{message}.</p>

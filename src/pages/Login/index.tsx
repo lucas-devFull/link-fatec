@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { setAxiosToken, useAuth } from '../../contexts/auth';
+import { useAuth } from '../../contexts/auth';
 import { ButtonLogin, ComponentLogin, ContainerInput, ContainerLogin, InputLogin } from './style';
 import loginWallpeaper from '../../assets/images/illustration.png';
-import { LoginIn, TokenProps } from '../../services/Api';
-import ReactNotification, { ReactNotifications, Store } from 'react-notifications-component';
+import { ReactNotifications, Store } from 'react-notifications-component';
 import 'react-notifications-component/dist/theme.css';
 import axios from '../../services/Api';
+import { useNavigate } from 'react-router-dom';
 
 const Login: React.FC = () => {
-    const { setLogged } = useAuth();
+    const { signIn } = useAuth();
+    const navigate = useNavigate();
 
     function handleLogin() {
         const form = {
@@ -21,23 +22,8 @@ const Login: React.FC = () => {
                 .post('/login', form)
                 .then((response) => {
                     if (response.status == 200) {
-                        Store.addNotification({
-                            // title: 'Login',
-                            message: 'Login Efetuado com sucesso',
-                            type: 'success',
-                            insert: 'top',
-                            container: 'top-right',
-                            animationIn: ['animated', 'fadeIn'],
-                            animationOut: ['animated', 'fadeOut'],
-                            dismiss: {
-                                duration: 2000,
-                                onScreen: true,
-                            },
-                            onRemoval: () => {
-                                localStorage.setItem('token', JSON.stringify(response.data));
-                                setAxiosToken(response.data.token);
-                                setLogged(true);
-                            },
+                        signIn(response.data, () => {
+                            navigate('/');
                         });
                     } else {
                         alert('ERRO');
@@ -82,7 +68,7 @@ const Login: React.FC = () => {
             <ReactNotifications />
             <ContainerLogin>
                 <ContainerInput>
-                    <div> Gestão Estágio </div>
+                    <div> Fatec Estágios </div>
                     <div>
                         <InputLogin>
                             <input

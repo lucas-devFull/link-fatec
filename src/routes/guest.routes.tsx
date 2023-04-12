@@ -11,8 +11,7 @@ const GuestRoutes: React.FC = () => {
                 path: '/',
                 element: <Login />,
             },
-            { path: '/pageNotFound', element: <PageNotFound /> },
-            { path: '*', element: <Navigate to="/pageNotFound" /> },
+            { path: '*', element: <PageNotFound redirect={true} /> },
         ]);
         return routes;
     };
