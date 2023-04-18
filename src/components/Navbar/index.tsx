@@ -12,7 +12,7 @@ type Props = {
 };
 
 const Navbar: React.FC<Props> = ({ Icon = <LogoImage /> }) => {
-    const { signOut } = useAuth();
+    const { signOut, user } = useAuth();
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const handleClose = () => {
@@ -31,11 +31,7 @@ const Navbar: React.FC<Props> = ({ Icon = <LogoImage /> }) => {
                 <Box sx={{ flexGrow: 0 }}>
                     <Tooltip title="Abrir Configurações" onClick={(e) => setAnchorEl(e.currentTarget)}>
                         <IconButton>
-                            <Avatar
-                                sx={{ width: 32, height: 32 }}
-                                alt="Remy Sharp"
-                                src="../../assets/walter-white.svg"
-                            />
+                            <Avatar sx={{ width: 32, height: 32 }} alt=""></Avatar>
                         </IconButton>
                     </Tooltip>
 
@@ -76,11 +72,11 @@ const Navbar: React.FC<Props> = ({ Icon = <LogoImage /> }) => {
                         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                     >
-                        <MenuItem onClick={() => navigate('/')}>Perfil</MenuItem>
+                        <MenuItem onClick={() => navigate('/perfil')}>Perfil</MenuItem>
                         <MenuItem
                             onClick={() =>
                                 signOut(() => {
-                                    navigate('/');
+                                    navigate('/login');
                                 })
                             }
                         >

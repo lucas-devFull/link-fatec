@@ -1,18 +1,6 @@
 import React, { memo, useEffect, useState } from 'react';
 import Navigation, { NavigationItemProps } from '../../components/Navigation/index';
 
-import { ReactComponent as DashboardSvg } from '../../assets/svgs/iconsMenu/dashboard-icon.svg';
-import { ReactComponent as GeneralMapSvg } from '../../assets/svgs/iconsMenu/earth-home-world.svg';
-import { ReactComponent as ReportSvg } from '../../assets/svgs/iconsMenu/business-chart.svg';
-import { ReactComponent as RegisterSvg } from '../../assets/svgs/iconsMenu/plus-add.svg';
-import { ReactComponent as LogistSvg } from '../../assets/svgs/iconsMenu/arrow-location-direction.svg';
-import { ReactComponent as DriverBehaviorSvg } from '../../assets/svgs/iconsMenu/direction.svg';
-import { ReactComponent as PainelAdmSvg } from '../../assets/svgs/iconsMenu/suitcase-portfolio.svg';
-import { ReactComponent as SettingsSvg } from '../../assets/svgs/iconsMenu/settings.svg';
-import { ReactComponent as ChangelogSvg } from '../../assets/svgs/iconsMenu/documents-file-text.svg';
-import { ReactComponent as MessageSvg } from '../../assets/svgs/iconsMenu/emails-letter-mail.svg';
-import { ReactComponent as OnboardSpeedReportSvg } from '../../assets/svgs/iconsMenu/dashboard-circle-1.svg';
-
 import Container from './components/Container';
 import { ContainerPage } from './styles';
 import LogoImage from '../logoImage';

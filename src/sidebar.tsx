@@ -112,7 +112,7 @@ export const getMenu = (tipo_login: number | string | null | undefined) => {
                 },
                 {
                     id: 5,
-                    description: 'Usuários Sistema',
+                    description: 'Administradores do Sistema',
                     menu_icon: null,
                     item_group: 2,
                     ordenation: 7,

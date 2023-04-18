@@ -18,6 +18,8 @@ import {
 } from './styles';
 import { SPACING_INLINE_08 } from '../../utils/stylesGlobals';
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 
 export interface NavigationItemProps extends React.HTMLAttributes<HTMLDivElement> {
     callback: () => void;
@@ -56,8 +58,10 @@ const Navigation: React.FC<Props> = ({ items, nameUser = 'Lucas Conceição', Ic
             }}
         >
             <NavHeader>
-                <ContainerLogo onClick={() => navigate('/')}>{<Icon />}</ContainerLogo>
-                <div>{nameUser}</div>
+                <ContainerLogo onClick={() => navigate('/')}>
+                    <FontAwesomeIcon size="2x" icon={icon({ name: 'circle-user' })} />
+                </ContainerLogo>
+                <div onClick={() => navigate('/perfil')}>{nameUser}</div>
             </NavHeader>
 
             <HrStyled />

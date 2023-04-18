@@ -1,29 +1,49 @@
 import React from 'react';
-import { Navigate, useRoutes } from 'react-router-dom';
+import { RouteObject, useRoutes } from 'react-router-dom';
+import { useAuth } from '../contexts/auth';
 import MainLayout from '../layouts/MainLayout';
 import Dashboard from '../pages/DashBoard';
 import PageNotFound from '../pages/PageNotFound';
-import Student from '../pages/Registers/Students';
+import { getRoutesAdmin, getRoutesCompany, getRoutesMaster } from './utils.routes';
+import styled from 'styled-components';
+
+const ContainerRoutes = styled.div`
+    padding: 2rem;
+    height: 40rem;
+    display: flex;
+`;
 
 const AuthRoutes: React.FC = () => {
+    const { user, logged } = useAuth();
+
+    const getRoutesPermitted = (): RouteObject[] => {
+        if (user?.login_type == '1') {
+            return getRoutesCompany();
+        }
+
+        if (user?.login_type == '4') {
+            return getRoutesAdmin();
+        }
+
+        return getRoutesMaster();
+    };
     const GetRoutes = () => {
         const routes = useRoutes([
             {
                 path: '/',
                 element: <Dashboard />,
             },
-            {
-                path: '/register/student',
-                element: <Student />,
-            },
-            { path: '*', element: <PageNotFound redirect={false} /> },
+            { path: '*', element: <PageNotFound redirect={!logged} /> },
+            ...getRoutesPermitted(),
         ]);
         return routes;
     };
 
     return (
         <MainLayout>
-            <GetRoutes />
+            <ContainerRoutes>
+                <GetRoutes />
+            </ContainerRoutes>
         </MainLayout>
     );
 };

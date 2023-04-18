@@ -6,12 +6,15 @@ import { ReactNotifications, Store } from 'react-notifications-component';
 import 'react-notifications-component/dist/theme.css';
 import axios from '../../services/Api';
 import { useNavigate } from 'react-router-dom';
+import { CircularProgress } from '@mui/material';
 
 const Login: React.FC = () => {
     const { signIn } = useAuth();
     const navigate = useNavigate();
+    const [loading, setLoading] = useState<boolean>(false);
 
     function handleLogin() {
+        setLoading(true);
         const form = {
             email: fieldsLogin.email,
             password: fieldsLogin.password,
@@ -19,9 +22,10 @@ const Login: React.FC = () => {
 
         try {
             axios
-                .post('/login', form)
+                .post('/v1/web/login', form)
                 .then((response) => {
                     if (response.status == 200) {
+                        setLoading(false);
                         signIn(response.data, () => {
                             navigate('/');
                         });
@@ -30,6 +34,7 @@ const Login: React.FC = () => {
                     }
                 })
                 .catch((er) => {
+                    setLoading(false);
                     Store.addNotification({
                         message: 'Login ou Senha Incorretos! Tente novamente',
                         type: 'warning',
@@ -43,7 +48,6 @@ const Login: React.FC = () => {
                     });
                 });
         } catch (error) {
-            debugger;
             alert('erro');
         }
     }
@@ -91,7 +95,7 @@ const Login: React.FC = () => {
                     <div>
                         <InputLogin>
                             <input
-                                type="text"
+                                type="password"
                                 onChange={(e) =>
                                     setFieldsLogin({
                                         ...fieldsLogin,
@@ -107,7 +111,9 @@ const Login: React.FC = () => {
                             <span> Senha </span>
                         </InputLogin>
                     </div>
-                    <ButtonLogin onClick={() => handleLogin()}>LOGIN</ButtonLogin>
+                    <ButtonLogin onClick={() => handleLogin()} disabled={loading}>
+                        {loading ? <CircularProgress color={'error'} size={'2rem'} /> : 'LOGIN'}
+                    </ButtonLogin>
                 </ContainerInput>
             </ContainerLogin>
         </ComponentLogin>

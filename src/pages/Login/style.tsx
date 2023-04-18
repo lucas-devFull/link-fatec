@@ -173,4 +173,12 @@ export const ButtonLogin = styled.button`
     &:hover {
         background: #bf0404;
     }
+
+    &:disabled {
+        background: #bf040496;
+    }
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
 `;

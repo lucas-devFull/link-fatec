@@ -8,7 +8,7 @@ type EmptyStateProps = {
         }
     >;
     title: string;
-    message: string;
+    message: string | any;
     style?: React.CSSProperties;
 };
 
