@@ -11,7 +11,7 @@ module.exports = {
         sourceType: 'module',
         ecmaFeatures: {
             jsx: true,
-            ts: true
+            ts: true,
         },
     },
     ignorePatterns: ['mock-api/*.js', 'craco.config.js'],
