@@ -26,6 +26,7 @@
     "primereact": "^9.2.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.43.9",
     "react-notifications-component": "^4.0.1",
     "react-query": "^3.39.0",
     "react-router": "^5.2.0",

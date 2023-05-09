@@ -59,14 +59,6 @@ export const getMenu = (tipo_login: number | string | null | undefined) => {
                 itens: [
                     {
                         id: 8,
-                        description: 'Classe',
-                        menu_icon: null,
-                        item_group: 2,
-                        ordenation: 3,
-                        endpoint: '/register/college_class',
-                    },
-                    {
-                        id: 8,
                         description: 'Vagas',
                         menu_icon: null,
                         item_group: 2,
@@ -124,23 +116,7 @@ export const getMenu = (tipo_login: number | string | null | undefined) => {
                     menu_icon: null,
                     item_group: 2,
                     ordenation: 1,
-                    endpoint: '/register/curses',
-                },
-                {
-                    id: 7,
-                    description: 'Semestre',
-                    menu_icon: null,
-                    item_group: 2,
-                    ordenation: 2,
-                    endpoint: '/register/semester',
-                },
-                {
-                    id: 8,
-                    description: 'Classe',
-                    menu_icon: null,
-                    item_group: 2,
-                    ordenation: 3,
-                    endpoint: '/register/college_class',
+                    endpoint: '/register/courses',
                 },
                 {
                     id: 8,

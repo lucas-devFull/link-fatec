@@ -2,6 +2,8 @@ import React from 'react';
 import Jobs from '../pages/Registers/jobs';
 import Student from '../pages/Registers/Students';
 import UserSystem from '../pages/Registers/UserSystem';
+import Couses from '../pages/Registers/Couses';
+import Company from '../pages/Registers/Company';
 
 export const getRoutesCompany = () => {
     return [
@@ -28,12 +30,20 @@ export const getRoutesMaster = () => {
             element: <Student />,
         },
         {
-            path: '/register/jobs',
+            path: 'register/administrator',
+            element: <UserSystem />,
+        },
+        {
+            path: 'register/courses',
+            element: <Couses />,
+        },
+        {
+            path: 'register/jobs',
             element: <Jobs />,
         },
         {
-            path: 'register/administrator',
-            element: <UserSystem />,
+            path: 'register/company',
+            element: <Company />,
         },
     ];
 };

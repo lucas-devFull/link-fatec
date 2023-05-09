@@ -1,25 +1,50 @@
 import React, { useEffect, useState } from 'react';
-import { ContainerButtonGrid, ContainerForm, ContainerGrid, ContainerRegister, TitleRegister } from './style';
+import {
+    ContainerButtonGrid,
+    ContainerFields,
+    ContainerForm,
+    ContainerGrid,
+    ContainerLoginPassword,
+    ContainerPopUpButton,
+    ContainerRegister,
+    TitleRegister,
+} from './style';
 import { DataTable } from 'primereact/datatable';
-import 'primereact/resources/themes/lara-light-indigo/theme.css';
-import 'primereact/resources/primereact.min.css';
-import 'primeicons/primeicons.css';
 import { locale, addLocale } from 'primereact/api';
 import { InputText } from 'primereact/inputtext';
 import { Password } from 'primereact/password';
 import { Divider } from 'primereact/divider';
 
 import { Column } from 'primereact/column';
-import { Box, Button } from '@mui/material';
+import { Box, Button, CircularProgress } from '@mui/material';
 import { Dialog } from 'primereact/dialog';
 import axios from '../../../services/Api';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useForm } from 'react-hook-form';
+import { isValidEmail } from '../../../utils';
+import { ReactNotifications, Store } from 'react-notifications-component';
+
+type propsFieldsUser = {
+    id?: number;
+    full_name: string;
+    email: string;
+    password?: string;
+};
 
 const UserSystem = () => {
     const [data, setData] = useState([]);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [loadingTable, setLoadingTable] = useState<boolean>(false);
+    const {
+        register,
+        handleSubmit,
+        watch,
+        formState: { errors },
+    } = useForm<propsFieldsUser>();
     const [selectedProducts, setSelectedProducts] = useState<any>();
     const [visible, setVisible] = useState<boolean>(false);
+    const [dataEdition, setDataEdition] = useState<propsFieldsUser | null>(null);
 
     addLocale('pt', {
         startsWith: 'Começa com',
@@ -29,29 +54,119 @@ const UserSystem = () => {
     });
     locale('pt');
 
+    const ComponetDeleteUser = () => {
+        return (
+            <ContainerPopUpButton>
+                <div>
+                    <Button
+                        variant="outlined"
+                        color={'inherit'}
+                        onClick={() => {
+                            alert('NÃO IMPLEMENTADO !!'), Store.removeAllNotifications();
+                        }}
+                    >
+                        SIM
+                    </Button>
+                </div>
+                <div>
+                    <Button variant="outlined" color={'inherit'} onClick={() => Store.removeAllNotifications()}>
+                        NÃO
+                    </Button>
+                </div>
+            </ContainerPopUpButton>
+        );
+    };
+
+    const deleteUser = () => {
+        if (dataEdition?.id && dataEdition.id > 0) {
+            Store.addNotification({
+                message: <ComponetDeleteUser />,
+                type: 'danger',
+                insert: 'top',
+                title: 'Deseja realmente deletar este usuário ?',
+                container: 'top-center',
+                width: 350,
+                dismiss: {
+                    showIcon: true,
+                    duration: 5000,
+                    pauseOnHover: true,
+                    onScreen: true,
+                    click: false,
+                },
+                onRemoval: () => {
+                    getAllUsers();
+                },
+            });
+        }
+    };
+
+    const getAllUsers = () => {
+        setLoadingTable(true);
+
+        axios
+            .get('/v1/admin')
+            .then((response) => {
+                setData(response.data);
+                setLoadingTable(false);
+            })
+            .catch((error) => {
+                setLoadingTable(false);
+            });
+    };
+
     useEffect(() => {
-        axios.post('/v1/api/register/admin').then((response) => {
-            setData(response.data);
-        });
+        getAllUsers();
     }, []);
 
-    const rows = [
-        { id: 1, lastName: 'Snow', firstName: 'Jon', age: 35 },
-        { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 42 },
-        { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 45 },
-        { id: 4, lastName: 'Stark', firstName: 'Arya', age: 16 },
-        { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
-        { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
-        { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
-        { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
-        { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
-        { id: 10, lastName: 'Roxie', firstName: 'a', age: 65 },
-        { id: 11, lastName: 'Roxie', firstName: 'Hardvey', age: 65 },
-        { id: 12, lastName: 'Roxie', firstName: 'Harddvey', age: 65 },
-    ];
+    const saveUser = () => {
+        setLoading(!loading);
+        console.log(watch());
+
+        axios
+            .post(`v1/register/admin`, watch())
+            .then((response) => {
+                if (response.status == 201) {
+                    Store.addNotification({
+                        message: 'Usuário criado com sucesso !!',
+                        type: 'success',
+                        insert: 'top',
+                        container: 'top-center',
+                        width: 350,
+                        dismiss: {
+                            duration: 2000,
+                            onScreen: true,
+                        },
+                        onRemoval: () => {
+                            setLoading(false);
+                            setVisible(!visible);
+                            getAllUsers();
+                        },
+                    });
+                }
+            })
+            .catch((err) => {
+                Store.addNotification({
+                    message: 'Erro ao criar o usuário, tente novamente !!',
+                    type: 'danger',
+                    insert: 'top',
+                    container: 'top-center',
+                    width: 350,
+                    dismiss: {
+                        duration: 2000,
+                        onScreen: true,
+                    },
+                    onRemoval: () => {
+                        setLoading(false);
+                        setVisible(!visible);
+                        getAllUsers();
+                    },
+                });
+            });
+    };
 
     return (
         <ContainerRegister>
+            <ReactNotifications />
             <Dialog
                 draggable={false}
                 header="Informações"
@@ -59,32 +174,59 @@ const UserSystem = () => {
                 style={{ width: '50vw' }}
                 onHide={() => setVisible(false)}
             >
-                <ContainerForm>
-                    <div className="p-inputgroup">
-                        <span className="p-inputgroup-addon">
-                            <FontAwesomeIcon icon={icon({ name: 'circle-user' })} />
-                        </span>
-                        <InputText placeholder="Nome Completo" />
-                    </div>
+                <ContainerForm onSubmit={handleSubmit(saveUser)}>
+                    <ContainerFields>
+                        <div className="p-inputgroup">
+                            <span className="p-inputgroup-addon">
+                                <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
+                            </span>
+                            <InputText
+                                {...register('full_name', { required: true })}
+                                placeholder="Nome Completo"
+                                className={errors.full_name ? 'p-invalid' : ''}
+                                value={dataEdition?.full_name}
+                            />
+                        </div>
+                        {errors.full_name && <p>Este campo é obrigatório</p>}
+                    </ContainerFields>
 
-                    <div className="p-inputgroup">
-                        <span className="p-inputgroup-addon">
-                            <FontAwesomeIcon icon={icon({ name: 'circle-user' })} />
-                        </span>
-                        <InputText placeholder="Email" />
-                    </div>
+                    <ContainerLoginPassword>
+                        <ContainerFields>
+                            <div className="p-inputgroup">
+                                <span className="p-inputgroup-addon">
+                                    <FontAwesomeIcon icon={icon({ name: 'circle-user' })} />
+                                </span>
+                                <InputText
+                                    {...register('email', { validate: isValidEmail })}
+                                    placeholder="Email"
+                                    className={errors.email ? 'p-invalid' : ''}
+                                    value={dataEdition?.email}
+                                />
+                            </div>
+                            {errors.email && <p> Preencha o campo corretamente </p>}
+                        </ContainerFields>
 
-                    <div className="p-inputgroup">
-                        <span className="p-inputgroup-addon">
-                            <FontAwesomeIcon icon={icon({ name: 'circle-user' })} />
-                        </span>
+                        <ContainerFields>
+                            <div className="p-inputgroup">
+                                <span className="p-inputgroup-addon">
+                                    <FontAwesomeIcon icon={icon({ name: 'lock' })} />
+                                </span>
 
-                        <Password placeholder="Senha" feedback={false} toggleMask />
-                    </div>
+                                <InputText
+                                    type="password"
+                                    {...register('password', { required: true })}
+                                    placeholder="Senha"
+                                    className={errors.password ? 'p-invalid' : ''}
+                                />
+                            </div>
+                            {errors.password && <p>Este campo é obrigatório</p>}
+                        </ContainerFields>
+                    </ContainerLoginPassword>
+
                     <Divider />
                     <div style={{ display: 'flex', justifyContent: 'end' }}>
-                        <Button onClick={() => alert('salvar')} variant="outlined" color="primary">
-                            Adicionar
+                        <Button style={{ width: '8rem' }} type="submit" variant="outlined" color="primary">
+                            {loading ? <CircularProgress color={'primary'} size={'2rem'} /> : 'Adicionar'}
                         </Button>
                     </div>
                 </ContainerForm>
@@ -96,32 +238,46 @@ const UserSystem = () => {
                     <Button onClick={() => setVisible(!visible)} variant="outlined" color="primary">
                         Adicionar
                     </Button>
-                    <Button variant="outlined" color="inherit">
+                    <Button
+                        onClick={() => alert('NÃO IMPLEMENTADO !!')}
+                        disabled={dataEdition != null ? false : true}
+                        variant="outlined"
+                        color="inherit"
+                    >
                         Editar
                     </Button>
-                    <Button variant="outlined" color="error">
+                    <Button
+                        onClick={deleteUser}
+                        disabled={dataEdition != null ? false : true}
+                        variant="outlined"
+                        color="error"
+                    >
                         Deletar
                     </Button>
                 </ContainerButtonGrid>
-                <Box sx={{ height: '40rem' }}>
+                <Box sx={{ width: '100%', height: '40rem', padding: '0rem 1.5rem' }}>
                     <DataTable
                         filterDisplay="row"
-                        // selectionMode="single"
                         size="normal"
-                        value={rows}
+                        value={data}
                         paginator
-                        rows={10}
+                        loading={loadingTable}
+                        rows={8}
+                        width="3rem"
                         rowsPerPageOptions={[5, 10, 25, 50]}
-                        tableStyle={{ minWidth: '50rem' }}
                         selectionMode={'single'}
+                        metaKeySelection={false}
                         dataKey="id"
                         selection={selectedProducts}
                         onSelectionChange={(e) => setSelectedProducts(e.value)}
                         scrollable
                         scrollHeight="35rem"
+                        onRowSelect={(event) => setDataEdition(event.data)}
+                        onRowUnselect={() => setDataEdition(null)}
                     >
                         <Column field="id" sortable filter style={{ width: '25%' }} header="ID"></Column>
-                        <Column field="firstName" sortable filter style={{ width: '25%' }} header="Email"></Column>
+                        <Column field="name" sortable filter style={{ width: '25%' }} header="Name"></Column>
+                        <Column field="email" sortable filter style={{ width: '25%' }} header="Email"></Column>
                     </DataTable>
                 </Box>
             </ContainerGrid>

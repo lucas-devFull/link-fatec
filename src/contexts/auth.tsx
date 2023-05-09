@@ -38,7 +38,7 @@ const AuthProvider = ({ children }: any) => {
         if (storagedToken) {
             try {
                 const token = JSON.parse(storagedToken);
-                setAxiosToken(token.token);
+                setAxiosToken(token.token.access_token);
                 setLogged(true);
             } catch (error) {
                 redirect('/');
