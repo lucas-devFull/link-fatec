@@ -24,9 +24,9 @@ const Navbar: React.FC<Props> = ({ Icon = <LogoImage /> }) => {
         <ContainerNavbar>
             <div> FATEC ESTÁGIO </div>
             <div>
-                <Badge badgeContent={4} color="error" style={{ cursor: 'pointer' }}>
-                    <FontAwesomeIcon size="lg" icon={icon({ name: 'bell', style: 'regular' })} />
-                </Badge>
+                {/* <Badge badgeContent={4} color="error" style={{ cursor: 'pointer' }}> */}
+                {/* <FontAwesomeIcon size="lg" icon={icon({ name: 'bell', style: 'regular' })} /> */}
+                {/* </Badge> */}
 
                 <Box sx={{ flexGrow: 0 }}>
                     <Tooltip title="Abrir Configurações" onClick={(e) => setAnchorEl(e.currentTarget)}>
@@ -72,7 +72,7 @@ const Navbar: React.FC<Props> = ({ Icon = <LogoImage /> }) => {
                         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                     >
-                        <MenuItem onClick={() => navigate('/perfil')}>Perfil</MenuItem>
+                        {/* <MenuItem onClick={() => navigate('/perfil')}>Perfil</MenuItem> */}
                         <MenuItem
                             onClick={() =>
                                 signOut(() => {

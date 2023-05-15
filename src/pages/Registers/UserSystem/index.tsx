@@ -28,6 +28,7 @@ import { ReactNotifications, Store } from 'react-notifications-component';
 type propsFieldsUser = {
     id?: number;
     full_name: string;
+    name: string;
     email: string;
     password?: string;
 };
@@ -40,11 +41,12 @@ const UserSystem = () => {
         register,
         handleSubmit,
         watch,
+        reset,
+        setValue,
         formState: { errors },
     } = useForm<propsFieldsUser>();
     const [selectedProducts, setSelectedProducts] = useState<any>();
     const [visible, setVisible] = useState<boolean>(false);
-    const [dataEdition, setDataEdition] = useState<propsFieldsUser | null>(null);
 
     addLocale('pt', {
         startsWith: 'Começa com',
@@ -54,17 +56,78 @@ const UserSystem = () => {
     });
     locale('pt');
 
+    const resetForm = () => {
+        setLoading(false);
+        setVisible(false);
+        getAllUsers();
+        setSelectedProducts(null);
+        reset();
+    };
+
+    const setFields = (values: propsFieldsUser | null) => {
+        if (values == null) {
+            reset();
+        } else {
+            setValue('id', values.id);
+            setValue('full_name', values.name);
+            setValue('email', values.email);
+            setValue('password', values.password);
+        }
+    };
+
+    const deleteUserById = () => {
+        Store.removeAllNotifications();
+        const id = watch('id');
+        if (id && id !== null && id > 0) {
+            reset();
+            axios
+                .delete(`v1/user?id=` + id)
+                .then((response) => {
+                    if (response.status == 201 || response.status == 200) {
+                        Store.addNotification({
+                            message: 'Usuário criado com sucesso !!',
+                            type: 'success',
+                            insert: 'top',
+                            container: 'top-center',
+                            width: 350,
+                            dismiss: {
+                                duration: 2000,
+                                onScreen: true,
+                            },
+                            onRemoval: () => {
+                                setSelectedProducts(null);
+                                getAllUsers();
+                                Store.removeAllNotifications();
+                            },
+                        });
+                    }
+                })
+                .catch((err) => {
+                    Store.addNotification({
+                        message: 'Erro ao criar o usuário, tente novamente !!',
+                        type: 'danger',
+                        insert: 'top',
+                        container: 'top-center',
+                        width: 350,
+                        dismiss: {
+                            duration: 2000,
+                            onScreen: true,
+                        },
+                        onRemoval: () => {
+                            setSelectedProducts(null);
+                            getAllUsers();
+                            Store.removeAllNotifications();
+                        },
+                    });
+                });
+        }
+    };
+
     const ComponetDeleteUser = () => {
         return (
             <ContainerPopUpButton>
                 <div>
-                    <Button
-                        variant="outlined"
-                        color={'inherit'}
-                        onClick={() => {
-                            alert('NÃO IMPLEMENTADO !!'), Store.removeAllNotifications();
-                        }}
-                    >
+                    <Button variant="outlined" color={'inherit'} onClick={deleteUserById}>
                         SIM
                     </Button>
                 </div>
@@ -78,7 +141,8 @@ const UserSystem = () => {
     };
 
     const deleteUser = () => {
-        if (dataEdition?.id && dataEdition.id > 0) {
+        const id = watch('id');
+        if (id && id !== null && id > 0) {
             Store.addNotification({
                 message: <ComponetDeleteUser />,
                 type: 'danger',
@@ -121,14 +185,32 @@ const UserSystem = () => {
     const saveUser = () => {
         setLoading(!loading);
         console.log(watch());
-
-        axios
-            .post(`v1/register/admin`, watch())
-            .then((response) => {
-                if (response.status == 201) {
+        const id = watch('id');
+        if (id && id !== null && id > 0) {
+            axios
+                .put(`v1/admin`, watch())
+                .then((response) => {
+                    if (response.status == 201) {
+                        Store.addNotification({
+                            message: 'Usuário atualizado com sucesso !!',
+                            type: 'success',
+                            insert: 'top',
+                            container: 'top-center',
+                            width: 350,
+                            dismiss: {
+                                duration: 2000,
+                                onScreen: true,
+                            },
+                            onRemoval: () => {
+                                resetForm();
+                            },
+                        });
+                    }
+                })
+                .catch((err) => {
                     Store.addNotification({
-                        message: 'Usuário criado com sucesso !!',
-                        type: 'success',
+                        message: 'Erro ao atualizar o usuário, tente novamente !!',
+                        type: 'danger',
                         insert: 'top',
                         container: 'top-center',
                         width: 350,
@@ -137,31 +219,48 @@ const UserSystem = () => {
                             onScreen: true,
                         },
                         onRemoval: () => {
-                            setLoading(false);
-                            setVisible(!visible);
-                            getAllUsers();
+                            resetForm();
                         },
                     });
-                }
-            })
-            .catch((err) => {
-                Store.addNotification({
-                    message: 'Erro ao criar o usuário, tente novamente !!',
-                    type: 'danger',
-                    insert: 'top',
-                    container: 'top-center',
-                    width: 350,
-                    dismiss: {
-                        duration: 2000,
-                        onScreen: true,
-                    },
-                    onRemoval: () => {
-                        setLoading(false);
-                        setVisible(!visible);
-                        getAllUsers();
-                    },
                 });
-            });
+        } else {
+            axios
+                .post(`v1/register/admin`, watch())
+                .then((response) => {
+                    if (response.status == 201) {
+                        Store.addNotification({
+                            message: 'Usuário criado com sucesso !!',
+                            type: 'success',
+                            insert: 'top',
+                            container: 'top-center',
+                            width: 350,
+                            dismiss: {
+                                duration: 2000,
+                                onScreen: true,
+                            },
+                            onRemoval: () => {
+                                resetForm();
+                            },
+                        });
+                    }
+                })
+                .catch((err) => {
+                    Store.addNotification({
+                        message: 'Erro ao criar o usuário, tente novamente !!',
+                        type: 'danger',
+                        insert: 'top',
+                        container: 'top-center',
+                        width: 350,
+                        dismiss: {
+                            duration: 2000,
+                            onScreen: true,
+                        },
+                        onRemoval: () => {
+                            resetForm();
+                        },
+                    });
+                });
+        }
     };
 
     return (
@@ -172,7 +271,7 @@ const UserSystem = () => {
                 header="Informações"
                 visible={visible}
                 style={{ width: '50vw' }}
-                onHide={() => setVisible(false)}
+                onHide={() => resetForm()}
             >
                 <ContainerForm onSubmit={handleSubmit(saveUser)}>
                     <ContainerFields>
@@ -184,7 +283,6 @@ const UserSystem = () => {
                                 {...register('full_name', { required: true })}
                                 placeholder="Nome Completo"
                                 className={errors.full_name ? 'p-invalid' : ''}
-                                value={dataEdition?.full_name}
                             />
                         </div>
                         {errors.full_name && <p>Este campo é obrigatório</p>}
@@ -200,7 +298,6 @@ const UserSystem = () => {
                                     {...register('email', { validate: isValidEmail })}
                                     placeholder="Email"
                                     className={errors.email ? 'p-invalid' : ''}
-                                    value={dataEdition?.email}
                                 />
                             </div>
                             {errors.email && <p> Preencha o campo corretamente </p>}
@@ -226,7 +323,7 @@ const UserSystem = () => {
                     <Divider />
                     <div style={{ display: 'flex', justifyContent: 'end' }}>
                         <Button style={{ width: '8rem' }} type="submit" variant="outlined" color="primary">
-                            {loading ? <CircularProgress color={'primary'} size={'2rem'} /> : 'Adicionar'}
+                            {loading ? <CircularProgress color={'primary'} size={'2rem'} /> : 'Salvar'}
                         </Button>
                     </div>
                 </ContainerForm>
@@ -235,12 +332,20 @@ const UserSystem = () => {
             <TitleRegister>Cadastro de usuários do sistema</TitleRegister>
             <ContainerGrid>
                 <ContainerButtonGrid>
-                    <Button onClick={() => setVisible(!visible)} variant="outlined" color="primary">
+                    <Button
+                        onClick={() => {
+                            setVisible(!visible);
+                            setSelectedProducts(null);
+                            reset();
+                        }}
+                        variant="outlined"
+                        color="primary"
+                    >
                         Adicionar
                     </Button>
                     <Button
-                        onClick={() => alert('NÃO IMPLEMENTADO !!')}
-                        disabled={dataEdition != null ? false : true}
+                        onClick={() => setVisible(!visible)}
+                        disabled={watch('id') != null ? false : true}
                         variant="outlined"
                         color="inherit"
                     >
@@ -248,7 +353,7 @@ const UserSystem = () => {
                     </Button>
                     <Button
                         onClick={deleteUser}
-                        disabled={dataEdition != null ? false : true}
+                        disabled={watch('id') != null ? false : true}
                         variant="outlined"
                         color="error"
                     >
@@ -272,8 +377,8 @@ const UserSystem = () => {
                         onSelectionChange={(e) => setSelectedProducts(e.value)}
                         scrollable
                         scrollHeight="35rem"
-                        onRowSelect={(event) => setDataEdition(event.data)}
-                        onRowUnselect={() => setDataEdition(null)}
+                        onRowSelect={(event) => setFields(event.data)}
+                        onRowUnselect={() => reset()}
                     >
                         <Column field="id" sortable filter style={{ width: '25%' }} header="ID"></Column>
                         <Column field="name" sortable filter style={{ width: '25%' }} header="Name"></Column>

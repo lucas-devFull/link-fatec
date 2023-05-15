@@ -26,6 +26,7 @@ import { useForm } from 'react-hook-form';
 import { ReactNotifications, Store } from 'react-notifications-component';
 import './style.css';
 import { ContainerFieldsForm } from './style';
+import { isValidEmail } from '../../../utils';
 
 type propsFieldsCompany = {
     id?: number;
@@ -33,7 +34,7 @@ type propsFieldsCompany = {
     full_name: string;
     password: string;
     email: string;
-    profile_picture: HTMLInputElement | null;
+    profile_picture: any | null;
 
     street: string;
     number: string;
@@ -43,8 +44,6 @@ type propsFieldsCompany = {
     city: string;
     state: string;
     country: string;
-    latitude: string;
-    longitude: string;
 };
 
 const Company = () => {
@@ -55,12 +54,15 @@ const Company = () => {
         register,
         handleSubmit,
         watch,
+        setValue,
+        reset,
         formState: { errors },
     } = useForm<propsFieldsCompany>();
     const [selectedProducts, setSelectedProducts] = useState<any>();
     const [visible, setVisible] = useState<boolean>(false);
-    const [dataEdition, setDataEdition] = useState<propsFieldsCompany | null>(null);
-    const [previewImg, setPreviewImg] = useState<string | null>(null);
+    const [previewImg, setPreviewImg] = useState<any | null>(null);
+    const [nameImg, setNameImg] = useState<string | null>(null);
+    const [zipCode, setZipCode] = useState<boolean>(true);
 
     addLocale('pt', {
         startsWith: 'Começa com',
@@ -70,18 +72,38 @@ const Company = () => {
     });
     locale('pt');
 
-    useEffect(() => {
-        console.log(dataEdition?.profile_picture);
-        if (dataEdition && dataEdition?.profile_picture !== null) {
-            setPreviewImg(URL.createObjectURL(dataEdition.profile_picture.target.files[0]));
-        }
-    }, [dataEdition?.profile_picture]);
+    const resetForm = () => {
+        setLoading(false);
+        setVisible(false);
+        getAllCompany();
+        setSelectedProducts(null);
+        setPreviewImg(null);
+        setNameImg(null);
+        reset();
+    };
 
-    const ComponetDeleteCourse = () => {
+    const setFields = (values: propsFieldsCompany | null) => {
+        if (values == null) {
+            reset();
+        } else {
+            setValue('id', values.id);
+        }
+    };
+
+    const getImg = (): string => {
+        const id = watch('id');
+        if (id && id !== null && id > 0) {
+            return previewImg;
+        }
+
+        return URL.createObjectURL(previewImg);
+    };
+
+    const ComponetDeleteCompany = () => {
         return (
             <ContainerPopUpButton>
                 <div>
-                    <Button variant="outlined" color={'inherit'} onClick={deleteCourseById}>
+                    <Button variant="outlined" color={'inherit'} onClick={deleteCompanyById}>
                         SIM
                     </Button>
                 </div>
@@ -94,11 +116,43 @@ const Company = () => {
         );
     };
 
-    const deleteCourseById = () => {
-        Store.removeAllNotifications();
-        if (dataEdition?.id && dataEdition.id > 0) {
+    const getCompanyById = () => {
+        const id = watch('id');
+        if (id && id !== null && id > 0) {
             axios
-                .delete(`v1/course?id=` + dataEdition.id)
+                .get(`v1/company/` + id)
+                .then((response) => {
+                    if (response.status == 201 || response.status == 200) {
+                        setValue('email', response.data.email);
+                        setValue('full_name', response.data.name);
+                        setPreviewImg(response.data.profile_picture);
+                    }
+                })
+                .catch((err) => {
+                    Store.addNotification({
+                        message: 'Erro ao buscar os dados do usuário, tente novamente !!',
+                        type: 'danger',
+                        insert: 'top',
+                        container: 'top-center',
+                        width: 350,
+                        dismiss: {
+                            duration: 2000,
+                            onScreen: true,
+                        },
+                        onRemoval: () => {
+                            resetForm();
+                        },
+                    });
+                });
+        }
+    };
+
+    const deleteCompanyById = () => {
+        Store.removeAllNotifications();
+        const id = watch('id');
+        if (id && id !== null && id > 0) {
+            axios
+                .delete(`v1/company?id=` + id)
                 .then((response) => {
                     if (response.status == 201 || response.status == 200) {
                         Store.addNotification({
@@ -112,7 +166,8 @@ const Company = () => {
                                 onScreen: true,
                             },
                             onRemoval: () => {
-                                getAllCourses();
+                                setSelectedProducts(null);
+                                getAllCompany();
                                 Store.removeAllNotifications();
                             },
                         });
@@ -130,7 +185,8 @@ const Company = () => {
                             onScreen: true,
                         },
                         onRemoval: () => {
-                            getAllCourses();
+                            setSelectedProducts(null);
+                            getAllCompany();
                             Store.removeAllNotifications();
                         },
                     });
@@ -138,10 +194,18 @@ const Company = () => {
         }
     };
 
-    const deleteCourse = () => {
-        if (dataEdition?.id && dataEdition.id > 0) {
+    const convertImgBase64 = (file: FileList, calback: (reader: any) => void) => {
+        const reader = new FileReader();
+        reader.onloadend = function () {
+            calback(reader.result);
+        };
+        reader.readAsDataURL(file[0]);
+    };
+    const deleteCompany = () => {
+        const id = watch('id');
+        if (id && id !== null && id > 0) {
             Store.addNotification({
-                message: <ComponetDeleteCourse />,
+                message: <ComponetDeleteCompany />,
                 type: 'danger',
                 insert: 'top',
                 title: 'Deseja realmente deletar este usuário ?',
@@ -155,17 +219,17 @@ const Company = () => {
                     click: false,
                 },
                 onRemoval: () => {
-                    getAllCourses();
+                    getAllCompany();
                 },
             });
         }
     };
 
-    const getAllCourses = () => {
+    const getAllCompany = () => {
         setLoadingTable(true);
 
         axios
-            .get('/v1/courses')
+            .get('/v1/company')
             .then((response) => {
                 setData(response.data);
                 setLoadingTable(false);
@@ -176,19 +240,75 @@ const Company = () => {
     };
 
     useEffect(() => {
-        getAllCourses();
+        getAllCompany();
     }, []);
 
-    const saveCourse = () => {
-        setLoading(!loading);
-
+    const getZipCode = (zipCode: string) => {
         axios
-            .post(`v1/course`, watch())
+            .get(`https://viacep.com.br/ws/${zipCode}/json/`)
             .then((response) => {
                 if (response.status == 201 || response.status == 200) {
+                    setValue('street', response.data.logradouro);
+                    setValue('city', response.data.localidade);
+                    setValue('neighborhood', response.data.bairro);
+                    setValue('state', response.data.uf);
+                    setValue('country', 'Brasil');
+                    setValue('zipCode', response.data.cep);
+                    setZipCode(false);
+                }
+            })
+            .catch((error) => {
+                setValue('street', '');
+                setValue('city', '');
+                setValue('neighborhood', '');
+                setValue('state', '');
+                setValue('country', '');
+                setValue('zipCode', '');
+                setZipCode(true);
+            });
+    };
+
+    const getLabelImage = () => {
+        const labelImage = nameImg && nameImg !== null ? nameImg : 'Selecione um arquivo';
+        return labelImage;
+    };
+
+    const getErrorZipCode = () => {
+        if (errors.zipCode && errors.zipCode.type == 'minLength') {
+            return <p> Tamanho minimo de 8 caracters</p>;
+        }
+
+        return errors.zipCode && <p>Este campo é obrigatório</p>;
+    };
+
+    const saveCompany = () => {
+        setLoading(true);
+        const id = watch('id');
+        if (id && id !== null && id > 0) {
+            axios
+                .put(`v1/company`, watch())
+                .then((response) => {
+                    if (response.status == 201 || response.status == 200) {
+                        Store.addNotification({
+                            message: 'Usuário atualizado com sucesso !!',
+                            type: 'success',
+                            insert: 'top',
+                            container: 'top-center',
+                            width: 350,
+                            dismiss: {
+                                duration: 2000,
+                                onScreen: true,
+                            },
+                            onRemoval: () => {
+                                resetForm();
+                            },
+                        });
+                    }
+                })
+                .catch((err) => {
                     Store.addNotification({
-                        message: 'Usuário criado com sucesso !!',
-                        type: 'success',
+                        message: 'Erro ao atualizar o usuário, tente novamente !!',
+                        type: 'danger',
                         insert: 'top',
                         container: 'top-center',
                         width: 350,
@@ -197,31 +317,48 @@ const Company = () => {
                             onScreen: true,
                         },
                         onRemoval: () => {
-                            setLoading(false);
-                            setVisible(!visible);
-                            getAllCourses();
+                            resetForm();
                         },
                     });
-                }
-            })
-            .catch((err) => {
-                Store.addNotification({
-                    message: 'Erro ao criar o usuário, tente novamente !!',
-                    type: 'danger',
-                    insert: 'top',
-                    container: 'top-center',
-                    width: 350,
-                    dismiss: {
-                        duration: 2000,
-                        onScreen: true,
-                    },
-                    onRemoval: () => {
-                        setLoading(false);
-                        setVisible(!visible);
-                        getAllCourses();
-                    },
                 });
-            });
+        } else {
+            axios
+                .post(`v1/register/company`, watch())
+                .then((response) => {
+                    if (response.status == 201 || response.status == 200) {
+                        Store.addNotification({
+                            message: 'Usuário criado com sucesso !!',
+                            type: 'success',
+                            insert: 'top',
+                            container: 'top-center',
+                            width: 350,
+                            dismiss: {
+                                duration: 2000,
+                                onScreen: true,
+                            },
+                            onRemoval: () => {
+                                resetForm();
+                            },
+                        });
+                    }
+                })
+                .catch((err) => {
+                    Store.addNotification({
+                        message: 'Erro ao criar o usuário, tente novamente !!',
+                        type: 'danger',
+                        insert: 'top',
+                        container: 'top-center',
+                        width: 350,
+                        dismiss: {
+                            duration: 2000,
+                            onScreen: true,
+                        },
+                        onRemoval: () => {
+                            resetForm();
+                        },
+                    });
+                });
+        }
     };
 
     return (
@@ -235,12 +372,12 @@ const Company = () => {
                     setVisible(false);
                     setLoading(false);
                     setPreviewImg(null);
-                }}
-                onShow={() => {
-                    console.log(dataEdition);
+                    setSelectedProducts(null);
+                    setNameImg(null);
+                    reset();
                 }}
             >
-                <ContainerForm onSubmit={handleSubmit(saveCourse)}>
+                <ContainerForm onSubmit={handleSubmit(saveCompany)}>
                     <ContainerFields>
                         <TabView activeIndex={0}>
                             <TabPanel header="Perfil" leftIcon="pi pi-user mr-2">
@@ -252,9 +389,8 @@ const Company = () => {
                                             </span>
                                             <InputText
                                                 {...register('full_name', { required: true })}
-                                                placeholder="Nome Completo"
+                                                placeholder="Razão social"
                                                 className={errors.full_name ? 'p-invalid' : ''}
-                                                value={dataEdition?.full_name}
                                             />
                                         </div>
                                         {errors.full_name && <p>Este campo é obrigatório</p>}
@@ -268,7 +404,6 @@ const Company = () => {
                                                 {...register('description', { required: true })}
                                                 placeholder="Descrição"
                                                 className={errors.description ? 'p-invalid' : ''}
-                                                value={dataEdition?.description}
                                             />
                                         </div>
                                         {errors.description && <p>Este campo é obrigatório</p>}
@@ -281,13 +416,12 @@ const Company = () => {
                                                 <FontAwesomeIcon icon={icon({ name: 'circle-user' })} />
                                             </span>
                                             <InputText
-                                                {...register('email', { required: true })}
+                                                {...register('email', { validate: isValidEmail })}
                                                 placeholder="Email"
                                                 className={errors.email ? 'p-invalid' : ''}
-                                                value={dataEdition?.email}
                                             />
                                         </div>
-                                        {errors.email && <p>Este campo é obrigatório</p>}
+                                        {errors.email && <p> Preencha o campo corretamente </p>}
                                     </ContainerFields>
                                     <ContainerFields>
                                         <div className="p-inputgroup">
@@ -299,7 +433,6 @@ const Company = () => {
                                                 {...register('password', { required: true })}
                                                 placeholder="Senha"
                                                 className={errors.password ? 'p-invalid' : ''}
-                                                value={dataEdition?.password}
                                             />
                                         </div>
                                         {errors.password && <p>Este campo é obrigatório</p>}
@@ -312,24 +445,22 @@ const Company = () => {
                                                 <FontAwesomeIcon icon={icon({ name: 'image' })} />
                                             </span>
                                             <label htmlFor="file" className={errors.profile_picture ? 'p-invalid' : ''}>
-                                                {dataEdition !== null && dataEdition.profile_picture !== null
-                                                    ? dataEdition.profile_picture.target.files[0].name
-                                                    : 'Selecione um arquivo'}
+                                                {getLabelImage()}
                                             </label>
                                             <InputText
                                                 id="file"
                                                 type="file"
                                                 accept="image/*"
-                                                {...register('profile_picture', { required: true })}
+                                                {...register('profile_picture')}
                                                 placeholder="Imagem Perfil"
+                                                {...register('profile_picture', { required: false })}
                                                 // value={dataEdition?.profile_picture.target.files}
                                                 onChange={(e) => {
                                                     if (e && e.target && e.target.files && e.target.files?.length > 0) {
-                                                        setDataEdition({
-                                                            ...(dataEdition !== null
-                                                                ? dataEdition
-                                                                : ({} as propsFieldsCompany)),
-                                                            profile_picture: e,
+                                                        setPreviewImg(e.target.files[0]);
+                                                        setNameImg(e.target.files[0].name);
+                                                        convertImgBase64(e.target.files, (reader) => {
+                                                            setValue('profile_picture', reader);
                                                         });
                                                     }
                                                 }}
@@ -340,16 +471,12 @@ const Company = () => {
                                     <ContainerFields>
                                         {previewImg && (
                                             <ContainerPreviewImg>
-                                                <img src={previewImg} />
+                                                <img src={getImg()} />
                                                 <div
                                                     onClick={() => {
                                                         setPreviewImg(null);
-                                                        setDataEdition({
-                                                            ...(dataEdition !== null
-                                                                ? dataEdition
-                                                                : ({} as propsFieldsCompany)),
-                                                            profile_picture: null,
-                                                        });
+                                                        setNameImg(null);
+                                                        setValue('profile_picture', '');
                                                     }}
                                                 >
                                                     <FontAwesomeIcon icon={icon({ name: 'xmark' })} />
@@ -361,117 +488,118 @@ const Company = () => {
                             </TabPanel>
                             <TabPanel header="Endereço" leftIcon="pi pi-id-card fs-2 mr-2">
                                 <ContainerFieldsForm>
-                                    <ContainerFields>
+                                    <ContainerFields className="endereco">
                                         <div className="p-inputgroup">
                                             <span className="p-inputgroup-addon">
                                                 <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
                                             </span>
+
                                             <InputText
-                                                {...register('full_name', { required: true })}
-                                                placeholder="Nome Completo"
-                                                className={errors.full_name ? 'p-invalid' : ''}
-                                                value={dataEdition?.full_name}
-                                            />
-                                        </div>
-                                        {errors.full_name && <p>Este campo é obrigatório</p>}
-                                    </ContainerFields>
-                                    <ContainerFields>
-                                        <div className="p-inputgroup">
-                                            <span className="p-inputgroup-addon">
-                                                <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
-                                            </span>
-                                            <InputText
-                                                {...register('description', { required: true })}
-                                                placeholder="Descrição"
-                                                className={errors.description ? 'p-invalid' : ''}
-                                                value={dataEdition?.description}
-                                            />
-                                        </div>
-                                        {errors.description && <p>Este campo é obrigatório</p>}
-                                    </ContainerFields>
-                                </ContainerFieldsForm>
-                                <ContainerFieldsForm>
-                                    <ContainerFields>
-                                        <div className="p-inputgroup">
-                                            <span className="p-inputgroup-addon">
-                                                <FontAwesomeIcon icon={icon({ name: 'circle-user' })} />
-                                            </span>
-                                            <InputText
-                                                {...register('email', { required: true })}
-                                                placeholder="Email"
-                                                className={errors.email ? 'p-invalid' : ''}
-                                                value={dataEdition?.email}
-                                            />
-                                        </div>
-                                        {errors.email && <p>Este campo é obrigatório</p>}
-                                    </ContainerFields>
-                                    <ContainerFields>
-                                        <div className="p-inputgroup">
-                                            <span className="p-inputgroup-addon">
-                                                <FontAwesomeIcon icon={icon({ name: 'lock' })} />
-                                            </span>
-                                            <InputText
-                                                type="password"
-                                                {...register('password', { required: true })}
-                                                placeholder="Senha"
-                                                className={errors.password ? 'p-invalid' : ''}
-                                                value={dataEdition?.password}
-                                            />
-                                        </div>
-                                        {errors.password && <p>Este campo é obrigatório</p>}
-                                    </ContainerFields>
-                                </ContainerFieldsForm>
-                                <ContainerFieldsForm>
-                                    <ContainerFields>
-                                        <ContainerInputFile className="p-inputgroup">
-                                            <span className="p-inputgroup-addon">
-                                                <FontAwesomeIcon icon={icon({ name: 'image' })} />
-                                            </span>
-                                            <label htmlFor="file" className={errors.profile_picture ? 'p-invalid' : ''}>
-                                                {dataEdition !== null && dataEdition.profile_picture !== null
-                                                    ? dataEdition.profile_picture.target.files[0].name
-                                                    : 'Selecione um arquivo'}
-                                            </label>
-                                            <InputText
-                                                id="file"
-                                                type="file"
-                                                accept="image/*"
-                                                {...register('profile_picture', { required: true })}
-                                                placeholder="Imagem Perfil"
-                                                // value={dataEdition?.profile_picture.target.files}
+                                                id="phone"
+                                                placeholder="digite um CEP 99999999"
+                                                maxLength={9}
+                                                {...register('zipCode', { required: true, minLength: 8 })}
+                                                className={errors.zipCode ? 'p-invalid' : ''}
                                                 onChange={(e) => {
-                                                    if (e && e.target && e.target.files && e.target.files?.length > 0) {
-                                                        setDataEdition({
-                                                            ...(dataEdition !== null
-                                                                ? dataEdition
-                                                                : ({} as propsFieldsCompany)),
-                                                            profile_picture: e,
-                                                        });
+                                                    if (e.target.value && e.target.value.length > 7) {
+                                                        getZipCode(e.target.value);
                                                     }
                                                 }}
                                             />
-                                        </ContainerInputFile>
-                                        {errors.profile_picture && <p>Este campo é obrigatório</p>}
+                                        </div>
+                                        {getErrorZipCode()}
                                     </ContainerFields>
-                                    <ContainerFields>
-                                        {previewImg && (
-                                            <ContainerPreviewImg>
-                                                <img src={previewImg} />
-                                                <div
-                                                    onClick={() => {
-                                                        setPreviewImg(null);
-                                                        setDataEdition({
-                                                            ...(dataEdition !== null
-                                                                ? dataEdition
-                                                                : ({} as propsFieldsCompany)),
-                                                            profile_picture: null,
-                                                        });
-                                                    }}
-                                                >
-                                                    <FontAwesomeIcon icon={icon({ name: 'xmark' })} />
-                                                </div>
-                                            </ContainerPreviewImg>
-                                        )}
+
+                                    <ContainerFields style={{ width: '45%' }}>
+                                        <div className="p-inputgroup">
+                                            <span className="p-inputgroup-addon">
+                                                <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
+                                            </span>
+                                            <InputText
+                                                {...register('street', { required: true })}
+                                                placeholder="Endereço"
+                                                className={errors.street ? 'p-invalid' : ''}
+                                                disabled={zipCode}
+                                            />
+                                        </div>
+                                        {errors.street && <p>Este campo é obrigatório</p>}
+                                    </ContainerFields>
+
+                                    <ContainerFields style={{ width: '20%' }}>
+                                        <div className="p-inputgroup">
+                                            <span className="p-inputgroup-addon">
+                                                <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
+                                            </span>
+                                            <InputText
+                                                {...register('number', { required: true })}
+                                                placeholder="Número"
+                                                className={errors.number ? 'p-invalid' : ''}
+                                                disabled={zipCode}
+                                            />
+                                        </div>
+                                        {errors.number && <p>Este campo é obrigatório</p>}
+                                    </ContainerFields>
+                                </ContainerFieldsForm>
+
+                                <ContainerFieldsForm>
+                                    <ContainerFields className="endereco">
+                                        <div className="p-inputgroup">
+                                            <span className="p-inputgroup-addon">
+                                                <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
+                                            </span>
+                                            <InputText
+                                                {...register('neighborhood', { required: true })}
+                                                placeholder="Bairro"
+                                                className={errors.neighborhood ? 'p-invalid' : ''}
+                                                disabled={zipCode}
+                                            />
+                                        </div>
+                                        {errors.neighborhood && <p>Este campo é obrigatório</p>}
+                                    </ContainerFields>
+                                    <ContainerFields className="endereco">
+                                        <div className="p-inputgroup">
+                                            <span className="p-inputgroup-addon">
+                                                <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
+                                            </span>
+                                            <InputText
+                                                {...register('city', { required: true })}
+                                                placeholder="Cidade"
+                                                className={errors.city ? 'p-invalid' : ''}
+                                                disabled={zipCode}
+                                            />
+                                        </div>
+                                        {errors.city && <p>Este campo é obrigatório</p>}
+                                    </ContainerFields>
+
+                                    <ContainerFields className="endereco">
+                                        <div className="p-inputgroup">
+                                            <span className="p-inputgroup-addon">
+                                                <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
+                                            </span>
+                                            <InputText
+                                                {...register('country', { required: true })}
+                                                placeholder="País"
+                                                className={errors.country ? 'p-invalid' : ''}
+                                                disabled={zipCode}
+                                            />
+                                        </div>
+                                        {errors.country && <p>Este campo é obrigatório</p>}
+                                    </ContainerFields>
+                                </ContainerFieldsForm>
+
+                                <ContainerFieldsForm>
+                                    <ContainerFields style={{ width: '100%' }}>
+                                        <div className="p-inputgroup">
+                                            <span className="p-inputgroup-addon">
+                                                <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
+                                            </span>
+                                            <InputText
+                                                {...register('complement', { required: false })}
+                                                placeholder="Complemento"
+                                                className={errors.complement ? 'p-invalid' : ''}
+                                            />
+                                        </div>
+                                        {errors.complement && <p>Este campo é obrigatório</p>}
                                     </ContainerFields>
                                 </ContainerFieldsForm>
                             </TabPanel>
@@ -493,7 +621,8 @@ const Company = () => {
                         onClick={() => {
                             setVisible(!visible);
                             setSelectedProducts(null);
-                            setDataEdition(null);
+                            setNameImg(null);
+                            reset();
                         }}
                         variant="outlined"
                         color="primary"
@@ -503,16 +632,17 @@ const Company = () => {
                     <Button
                         onClick={() => {
                             setVisible(!visible);
+                            getCompanyById();
                         }}
-                        disabled={dataEdition != null ? false : true}
+                        disabled={watch('id') != null ? false : true}
                         variant="outlined"
                         color="inherit"
                     >
                         Editar
                     </Button>
                     <Button
-                        onClick={deleteCourse}
-                        disabled={dataEdition != null ? false : true}
+                        onClick={deleteCompany}
+                        disabled={watch('id') != null ? false : true}
                         variant="outlined"
                         color="error"
                     >
@@ -536,8 +666,8 @@ const Company = () => {
                         onSelectionChange={(e) => setSelectedProducts(e.value)}
                         scrollable
                         scrollHeight="35rem"
-                        onRowSelect={(event) => setDataEdition(event.data)}
-                        onRowUnselect={() => setDataEdition(null)}
+                        onRowSelect={(event) => setFields(event.data)}
+                        onRowUnselect={() => reset()}
                         showGridlines
                     >
                         <Column

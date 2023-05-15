@@ -35,11 +35,12 @@ const Couses = () => {
         register,
         handleSubmit,
         watch,
+        reset,
+        setValue,
         formState: { errors },
     } = useForm<propsFieldsCourse>();
     const [selectedProducts, setSelectedProducts] = useState<any>();
     const [visible, setVisible] = useState<boolean>(false);
-    const [dataEdition, setDataEdition] = useState<propsFieldsCourse | null>(null);
 
     addLocale('pt', {
         startsWith: 'Começa com',
@@ -48,6 +49,24 @@ const Couses = () => {
         noFilter: 'Remover Filtro',
     });
     locale('pt');
+
+    const resetForm = () => {
+        setLoading(false);
+        setVisible(false);
+        getAllCourses();
+        setSelectedProducts(null);
+        reset();
+    };
+
+    const setFields = (values: propsFieldsCourse | null) => {
+        if (values == null) {
+            reset();
+        } else {
+            setValue('id', values.id);
+            setValue('name', values.name);
+            setValue('description', values.description);
+        }
+    };
 
     const ComponetDeleteCourse = () => {
         return (
@@ -68,9 +87,11 @@ const Couses = () => {
 
     const deleteCourseById = () => {
         Store.removeAllNotifications();
-        if (dataEdition?.id && dataEdition.id > 0) {
+        const id = watch('id');
+        if (id && id !== null && id > 0) {
+            reset();
             axios
-                .delete(`v1/course?id=` + dataEdition.id)
+                .delete(`v1/course?id=` + id)
                 .then((response) => {
                     if (response.status == 201 || response.status == 200) {
                         Store.addNotification({
@@ -84,6 +105,7 @@ const Couses = () => {
                                 onScreen: true,
                             },
                             onRemoval: () => {
+                                setSelectedProducts(null);
                                 getAllCourses();
                                 Store.removeAllNotifications();
                             },
@@ -102,6 +124,7 @@ const Couses = () => {
                             onScreen: true,
                         },
                         onRemoval: () => {
+                            setSelectedProducts(null);
                             getAllCourses();
                             Store.removeAllNotifications();
                         },
@@ -111,7 +134,8 @@ const Couses = () => {
     };
 
     const deleteCourse = () => {
-        if (dataEdition?.id && dataEdition.id > 0) {
+        const id = watch('id');
+        if (id && id !== null && id > 0) {
             Store.addNotification({
                 message: <ComponetDeleteCourse />,
                 type: 'danger',
@@ -153,12 +177,6 @@ const Couses = () => {
 
     const saveCourse = () => {
         setLoading(!loading);
-
-        // if (dataEdition !== null) {
-        //     alert('NÃO IMPLEMENTADO !!');
-        //     setVisible(false);
-        // }
-
         axios
             .post(`v1/course`, watch())
             .then((response) => {
@@ -174,9 +192,7 @@ const Couses = () => {
                             onScreen: true,
                         },
                         onRemoval: () => {
-                            setLoading(false);
-                            setVisible(!visible);
-                            getAllCourses();
+                            resetForm();
                         },
                     });
                 }
@@ -193,9 +209,7 @@ const Couses = () => {
                         onScreen: true,
                     },
                     onRemoval: () => {
-                        setLoading(false);
-                        setVisible(!visible);
-                        getAllCourses();
+                        resetForm();
                     },
                 });
             });
@@ -210,8 +224,7 @@ const Couses = () => {
                 visible={visible}
                 style={{ width: '50vw' }}
                 onHide={() => {
-                    setVisible(false);
-                    setLoading(false);
+                    resetForm();
                 }}
             >
                 <ContainerForm onSubmit={handleSubmit(saveCourse)}>
@@ -224,7 +237,6 @@ const Couses = () => {
                                 {...register('name', { required: true })}
                                 placeholder="Nome"
                                 className={errors.name ? 'p-invalid' : ''}
-                                value={dataEdition?.name}
                             />
                         </div>
                         {errors.name && <p>Este campo é obrigatório</p>}
@@ -239,7 +251,6 @@ const Couses = () => {
                                 {...register('description', { required: true })}
                                 placeholder="Descrição"
                                 className={errors.description ? 'p-invalid' : ''}
-                                value={dataEdition?.description}
                             />
                         </div>
                         {errors.description && <p>Este campo é obrigatório</p>}
@@ -260,7 +271,7 @@ const Couses = () => {
                         onClick={() => {
                             setVisible(!visible);
                             setSelectedProducts(null);
-                            setDataEdition(null);
+                            reset();
                         }}
                         variant="outlined"
                         color="primary"
@@ -269,11 +280,9 @@ const Couses = () => {
                     </Button>
                     <Button
                         onClick={() => {
-                            console.log(watch());
-
                             setVisible(!visible);
                         }}
-                        disabled={dataEdition != null ? false : true}
+                        disabled={watch('id') != null ? false : true}
                         variant="outlined"
                         color="inherit"
                     >
@@ -281,7 +290,7 @@ const Couses = () => {
                     </Button>
                     <Button
                         onClick={deleteCourse}
-                        disabled={dataEdition != null ? false : true}
+                        disabled={watch('id') != null ? false : true}
                         variant="outlined"
                         color="error"
                     >
@@ -305,8 +314,8 @@ const Couses = () => {
                         onSelectionChange={(e) => setSelectedProducts(e.value)}
                         scrollable
                         scrollHeight="35rem"
-                        onRowSelect={(event) => setDataEdition(event.data)}
-                        onRowUnselect={() => setDataEdition(null)}
+                        onRowSelect={(event) => setFields(event.data)}
+                        onRowUnselect={() => reset()}
                         showGridlines
                     >
                         <Column

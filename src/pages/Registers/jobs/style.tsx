@@ -55,12 +55,12 @@ export const ContainerFieldsForm = styled.div`
     display: flex;
     justify-content: space-between;
 
-    & > div {
-        width: 48%;
+    & > div.campos {
+        max-width: 32% !important;
     }
 
-    & > div.endereco {
-        max-width: 32% !important;
+    & > div {
+        width: 48%;
     }
 
     & > div:not(:last-child) {

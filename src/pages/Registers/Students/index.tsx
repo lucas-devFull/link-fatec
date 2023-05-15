@@ -41,12 +41,13 @@ const Student = () => {
         register,
         handleSubmit,
         watch,
+        reset,
+        setValue,
         formState: { errors },
     } = useForm<propsFieldsStudent>();
     const [selectedProducts, setSelectedProducts] = useState<any>();
-    const [courses, setCourses] = useState<Array<Record<string, string>> | []>([]);
     const [visible, setVisible] = useState<boolean>(false);
-    const [dataEdition, setDataEdition] = useState<propsFieldsStudent | null>(null);
+    const [courses, setCourses] = useState<Array<Record<string, string>> | []>([]);
 
     addLocale('pt', {
         startsWith: 'Começa com',
@@ -56,17 +57,81 @@ const Student = () => {
     });
     locale('pt');
 
+    const resetForm = () => {
+        setLoading(false);
+        setVisible(false);
+        getAllStudents();
+        setSelectedProducts(null);
+        reset();
+    };
+
+    const setFields = (values: propsFieldsStudent | null) => {
+        if (values == null) {
+            reset();
+        } else {
+            setValue('id', values.id);
+            setValue('course_id', values.course_id);
+            setValue('ra', values.ra);
+            setValue('full_name', values.name);
+            setValue('name', values.name);
+            setValue('email', values.email);
+            setValue('password', values.password);
+        }
+    };
+
+    const deleteStudentById = () => {
+        Store.removeAllNotifications();
+        const id = watch('id');
+        if (id && id !== null && id > 0) {
+            reset();
+            axios
+                .delete(`v1/student?id=` + id)
+                .then((response) => {
+                    if (response.status == 201 || response.status == 200) {
+                        Store.addNotification({
+                            message: 'Usuário criado com sucesso !!',
+                            type: 'success',
+                            insert: 'top',
+                            container: 'top-center',
+                            width: 350,
+                            dismiss: {
+                                duration: 2000,
+                                onScreen: true,
+                            },
+                            onRemoval: () => {
+                                setSelectedProducts(null);
+                                getAllStudents();
+                                Store.removeAllNotifications();
+                            },
+                        });
+                    }
+                })
+                .catch((err) => {
+                    Store.addNotification({
+                        message: 'Erro ao criar o usuário, tente novamente !!',
+                        type: 'danger',
+                        insert: 'top',
+                        container: 'top-center',
+                        width: 350,
+                        dismiss: {
+                            duration: 2000,
+                            onScreen: true,
+                        },
+                        onRemoval: () => {
+                            setSelectedProducts(null);
+                            getAllStudents();
+                            Store.removeAllNotifications();
+                        },
+                    });
+                });
+        }
+    };
+
     const ComponetDeleteStudent = () => {
         return (
             <ContainerPopUpButton>
                 <div>
-                    <Button
-                        variant="outlined"
-                        color={'inherit'}
-                        onClick={() => {
-                            alert('NÃO IMPLEMENTADO !!'), Store.removeAllNotifications();
-                        }}
-                    >
+                    <Button variant="outlined" color={'inherit'} onClick={deleteStudentById}>
                         SIM
                     </Button>
                 </div>
@@ -80,7 +145,8 @@ const Student = () => {
     };
 
     const deleteStudent = () => {
-        if (dataEdition?.id && dataEdition.id > 0) {
+        const id = watch('id');
+        if (id && id != null && id > 0) {
             Store.addNotification({
                 message: <ComponetDeleteStudent />,
                 type: 'danger',
@@ -133,53 +199,83 @@ const Student = () => {
 
     const saveStudent = () => {
         setLoading(!loading);
-        console.log(watch());
 
-        if (dataEdition !== null) {
-            alert('NÃO IMPLEMENTADO !!');
-            setVisible(false);
+        const id = watch('id');
+        if (id && id !== null && id > 0) {
+            axios
+                .put(`v1/student`, watch())
+                .then((response) => {
+                    if (response.status == 201 || response.status == 200) {
+                        Store.addNotification({
+                            message: 'Usuário atualizado com sucesso !!',
+                            type: 'success',
+                            insert: 'top',
+                            container: 'top-center',
+                            width: 350,
+                            dismiss: {
+                                duration: 2000,
+                                onScreen: true,
+                            },
+                            onRemoval: () => {
+                                resetForm();
+                            },
+                        });
+                    }
+                })
+                .catch((err) => {
+                    Store.addNotification({
+                        message: 'Erro ao atualizar o usuário, tente novamente !!',
+                        type: 'danger',
+                        insert: 'top',
+                        container: 'top-center',
+                        width: 350,
+                        dismiss: {
+                            duration: 2000,
+                            onScreen: true,
+                        },
+                        onRemoval: () => {
+                            resetForm();
+                        },
+                    });
+                });
+        } else {
+            axios
+                .post(`v1/register/student`, watch())
+                .then((response) => {
+                    if (response.status == 201 || response.status == 200) {
+                        Store.addNotification({
+                            message: 'Usuário criado com sucesso !!',
+                            type: 'success',
+                            insert: 'top',
+                            container: 'top-center',
+                            width: 350,
+                            dismiss: {
+                                duration: 2000,
+                                onScreen: true,
+                            },
+                            onRemoval: () => {
+                                resetForm();
+                            },
+                        });
+                    }
+                })
+                .catch((err) => {
+                    Store.addNotification({
+                        message: 'Erro ao criar o usuário, tente novamente !!',
+                        type: 'danger',
+                        insert: 'top',
+                        container: 'top-center',
+                        width: 350,
+                        dismiss: {
+                            duration: 2000,
+                            onScreen: true,
+                        },
+                        onRemoval: () => {
+                            resetForm();
+                        },
+                    });
+                });
         }
-
-        // axios
-        // .post(`v1/register/admin`, watch())
-        // .then((response) => {
-        // if (response.status == 201) {
-        // Store.addNotification({
-        // message: 'Usuário criado com sucesso !!',
-        // type: 'success',
-        // insert: 'top',
-        // container: 'top-center',
-        // width: 350,
-        // dismiss: {
-        // duration: 2000,
-        // onScreen: true,
-        // },
-        // onRemoval: () => {
-        // setLoading(false);
-        // setVisible(!visible);
-        // getAllStudents();
-        // },
-        // });
-        // }
-        // })
-        // .catch((err) => {
-        // Store.addNotification({
-        // message: 'Erro ao criar o usuário, tente novamente !!',
-        // type: 'danger',
-        // insert: 'top',
-        // container: 'top-center',
-        // width: 350,
-        // dismiss: {
-        // duration: 2000,
-        // onScreen: true,
-        // },
-        // onRemoval: () => {
-        // setLoading(false);
-        // setVisible(!visible);
-        // getAllStudents();
-        // },
-        // });
-        // });
     };
 
     return (
@@ -191,8 +287,7 @@ const Student = () => {
                 visible={visible}
                 style={{ width: '50vw' }}
                 onHide={() => {
-                    setVisible(false);
-                    setLoading(false);
+                    resetForm();
                 }}
                 onShow={getCourses}
             >
@@ -201,13 +296,12 @@ const Student = () => {
                         <FormControl fullWidth>
                             <InputLabel id="demo-simple-select-label">Curso</InputLabel>
                             <Select
-                                value={dataEdition?.course_id == null ? 0 : dataEdition?.course_id}
-                                onChange={(e) =>
-                                    setDataEdition({
-                                        ...(dataEdition ? dataEdition : ({} as propsFieldsStudent)),
-                                        course_id: e.target.value,
-                                    })
-                                }
+                                size="small"
+                                {...register('course_id', { required: false })}
+                                value={watch('course_id')}
+                                onChange={(e) => {
+                                    setValue('course_id', e.target.value);
+                                }}
                                 placeholder="Select o curso"
                                 fullWidth={true}
                                 label="Curso"
@@ -237,7 +331,6 @@ const Student = () => {
                                     {...register('ra', { required: true })}
                                     placeholder="Nome Completo"
                                     className={errors.ra ? 'p-invalid' : ''}
-                                    value={dataEdition?.ra}
                                 />
                             </div>
                             {errors.ra && <p>Este campo é obrigatório</p>}
@@ -252,7 +345,6 @@ const Student = () => {
                                     {...register('full_name', { required: true })}
                                     placeholder="Nome Completo"
                                     className={errors.full_name ? 'p-invalid' : ''}
-                                    value={dataEdition?.name}
                                 />
                             </div>
                             {errors.full_name && <p>Este campo é obrigatório</p>}
@@ -268,7 +360,6 @@ const Student = () => {
                                     {...register('email', { validate: isValidEmail })}
                                     placeholder="Email"
                                     className={errors.email ? 'p-invalid' : ''}
-                                    value={dataEdition?.email}
                                 />
                             </div>
                             {errors.email && <p> Preencha o campo corretamente </p>}
@@ -306,7 +397,7 @@ const Student = () => {
                         onClick={() => {
                             setVisible(!visible);
                             setSelectedProducts(null);
-                            setDataEdition(null);
+                            reset();
                         }}
                         variant="outlined"
                         color="primary"
@@ -316,10 +407,9 @@ const Student = () => {
                     <Button
                         onClick={() => {
                             console.log(watch());
-
                             setVisible(!visible);
                         }}
-                        disabled={dataEdition != null ? false : true}
+                        disabled={watch('id') != null ? false : true}
                         variant="outlined"
                         color="inherit"
                     >
@@ -327,7 +417,7 @@ const Student = () => {
                     </Button>
                     <Button
                         onClick={deleteStudent}
-                        disabled={dataEdition != null ? false : true}
+                        disabled={watch('id') != null ? false : true}
                         variant="outlined"
                         color="error"
                     >
@@ -351,8 +441,8 @@ const Student = () => {
                         onSelectionChange={(e) => setSelectedProducts(e.value)}
                         scrollable
                         scrollHeight="35rem"
-                        onRowSelect={(event) => setDataEdition(event.data)}
-                        onRowUnselect={() => setDataEdition(null)}
+                        onRowSelect={(event) => setFields(event.data)}
+                        onRowUnselect={() => reset()}
                         showGridlines
                     >
                         <Column

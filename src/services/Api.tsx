@@ -8,6 +8,7 @@ const instance = axios.create({
     headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         Authorization: '',
+        cancelToken: true,
     },
 });
 
@@ -52,10 +53,9 @@ export const getRefreshToken = async () => {
 instance.interceptors.response.use(
     (res) => res,
     (err: AxiosError) => {
-        const { signOut } = useAuth();
-
         if (err && err.response && err.response.status === 401) {
-            signOut();
+            localStorage.clear();
+            window.location.href = 'http://localhost:3000/login';
         }
     },
 );
