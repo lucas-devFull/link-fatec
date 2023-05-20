@@ -453,14 +453,14 @@ const UserSystem = () => {
                         Deletar
                     </Button>
                 </ContainerButtonGrid>
-                <Box sx={{ width: '100%', height: '40rem', padding: '0rem 1.5rem' }}>
+                <Box sx={{ width: '100%', height: '33rem', padding: '0rem 1.5rem' }}>
                     <DataTable
                         filterDisplay="row"
                         size="normal"
                         value={data}
                         paginator
                         loading={loadingTable}
-                        rows={8}
+                        rows={6}
                         width="3rem"
                         rowsPerPageOptions={[5, 10, 25, 50]}
                         selectionMode={'single'}
@@ -472,6 +472,7 @@ const UserSystem = () => {
                         scrollHeight="35rem"
                         onRowSelect={(event) => setFields(event.data)}
                         onRowUnselect={() => reset()}
+                        showGridlines
                     >
                         <Column field="id" sortable filter style={{ width: '25%' }} header="ID"></Column>
                         <Column field="name" sortable filter style={{ width: '25%' }} header="Nome"></Column>

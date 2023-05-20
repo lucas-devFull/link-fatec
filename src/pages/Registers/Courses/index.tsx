@@ -95,7 +95,7 @@ const Couses = () => {
                 .then((response) => {
                     if (response.status == 201 || response.status == 200) {
                         Store.addNotification({
-                            message: 'Usuário criado com sucesso !!',
+                            message: 'Curso excluído com sucesso !!',
                             type: 'success',
                             insert: 'top',
                             container: 'top-center',
@@ -114,7 +114,7 @@ const Couses = () => {
                 })
                 .catch((err) => {
                     Store.addNotification({
-                        message: 'Erro ao criar o usuário, tente novamente !!',
+                        message: 'Erro ao excluir o curso, tente novamente !!',
                         type: 'danger',
                         insert: 'top',
                         container: 'top-center',
@@ -140,7 +140,7 @@ const Couses = () => {
                 message: <ComponetDeleteCourse />,
                 type: 'danger',
                 insert: 'top',
-                title: 'Deseja realmente deletar este usuário ?',
+                title: 'Deseja realmente deletar este curso ?',
                 container: 'top-center',
                 width: 350,
                 dismiss: {
@@ -184,7 +184,7 @@ const Couses = () => {
                 .then((response) => {
                     if (response.status == 201 || response.status == 200) {
                         Store.addNotification({
-                            message: 'Usuário atualizado com sucesso !!',
+                            message: 'Curso atualizado com sucesso !!',
                             type: 'success',
                             insert: 'top',
                             container: 'top-center',
@@ -201,7 +201,7 @@ const Couses = () => {
                 })
                 .catch((err) => {
                     Store.addNotification({
-                        message: 'Erro ao atualizar o usuário, tente novamente !!',
+                        message: 'Erro ao atualizar o curso, tente novamente !!',
                         type: 'danger',
                         insert: 'top',
                         container: 'top-center',
@@ -221,7 +221,7 @@ const Couses = () => {
                 .then((response) => {
                     if (response.status == 201 || response.status == 200) {
                         Store.addNotification({
-                            message: 'Usuário criado com sucesso !!',
+                            message: 'Curso criado com sucesso !!',
                             type: 'success',
                             insert: 'top',
                             container: 'top-center',
@@ -238,7 +238,7 @@ const Couses = () => {
                 })
                 .catch((err) => {
                     Store.addNotification({
-                        message: 'Erro ao criar o usuário, tente novamente !!',
+                        message: 'Erro ao criar o curso, tente novamente !!',
                         type: 'danger',
                         insert: 'top',
                         container: 'top-center',
@@ -339,14 +339,14 @@ const Couses = () => {
                         Deletar
                     </Button>
                 </ContainerButtonGrid>
-                <Box sx={{ width: '100%', height: '40rem', padding: '0rem 1.5rem' }}>
+                <Box sx={{ width: '100%', height: '33rem', padding: '0rem 1.5rem' }}>
                     <DataTable
                         filterDisplay="row"
                         size="normal"
                         value={data}
                         paginator
                         loading={loadingTable}
-                        rows={8}
+                        rows={6}
                         width="3rem"
                         rowsPerPageOptions={[5, 10, 25, 50]}
                         selectionMode={'single'}
@@ -364,7 +364,7 @@ const Couses = () => {
                             field="id"
                             sortable
                             filter
-                            style={{ width: '20%', textAlign: 'center' }}
+                            style={{ width: '5%', textAlign: 'center' }}
                             header="ID"
                         ></Column>
                         <Column

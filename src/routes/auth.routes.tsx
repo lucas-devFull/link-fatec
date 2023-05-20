@@ -8,8 +8,8 @@ import { getRoutesAdmin, getRoutesCompany, getRoutesMaster } from './utils.route
 import styled from 'styled-components';
 
 const ContainerRoutes = styled.div`
-    padding: 2rem;
-    height: 102%;
+    padding: 1rem 1rem 0rem 1rem;
+    height: 100%;
     display: flex;
 `;
 

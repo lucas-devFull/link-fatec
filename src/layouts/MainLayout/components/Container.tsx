@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import styled from 'styled-components';
 
 export const ContainerContent = styled.div`
-    max-height: 93vh;
+    max-height: 100%;
 `;
 
 interface Props {

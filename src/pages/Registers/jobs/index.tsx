@@ -138,7 +138,7 @@ const Jobs = () => {
         const id = watch('id');
         if (id && id !== null && id > 0) {
             axios
-                .get(`v1/jobs-offers/` + id)
+                .get(`v1/job-offer?id=` + id)
                 .then((response) => {
                     if (response.status == 201 || response.status == 200) {
                         console.log(response.data);
@@ -146,7 +146,7 @@ const Jobs = () => {
                 })
                 .catch((err) => {
                     Store.addNotification({
-                        message: 'Erro ao buscar os dados do usuário, tente novamente !!',
+                        message: 'Erro ao buscar os dados da vaga, tente novamente !!',
                         type: 'danger',
                         insert: 'top',
                         container: 'top-center',
@@ -172,7 +172,7 @@ const Jobs = () => {
                 .then((response) => {
                     if (response.status == 201 || response.status == 200) {
                         Store.addNotification({
-                            message: 'Usuário criado com sucesso !!',
+                            message: 'Vaga excluída com sucesso !!',
                             type: 'success',
                             insert: 'top',
                             container: 'top-center',
@@ -191,7 +191,7 @@ const Jobs = () => {
                 })
                 .catch((err) => {
                     Store.addNotification({
-                        message: 'Erro ao deletar o usuário, tente novamente !!',
+                        message: 'Erro ao deletar a vaga, tente novamente !!',
                         type: 'danger',
                         insert: 'top',
                         container: 'top-center',
@@ -224,7 +224,7 @@ const Jobs = () => {
                 message: <ComponetDeleteJobs />,
                 type: 'danger',
                 insert: 'top',
-                title: 'Deseja realmente deletar este usuário ?',
+                title: 'Deseja realmente deletar esta vaga ?',
                 container: 'top-center',
                 width: 350,
                 dismiss: {
@@ -296,7 +296,7 @@ const Jobs = () => {
                 .then((response) => {
                     if (response.status == 201 || response.status == 200) {
                         Store.addNotification({
-                            message: 'Usuário atualizado com sucesso !!',
+                            message: 'Vaga atualizada com sucesso !!',
                             type: 'success',
                             insert: 'top',
                             container: 'top-center',
@@ -313,7 +313,7 @@ const Jobs = () => {
                 })
                 .catch((err) => {
                     Store.addNotification({
-                        message: 'Erro ao atualizar o usuário, tente novamente !!',
+                        message: 'Erro ao atualizar a vaga, tente novamente !!',
                         type: 'danger',
                         insert: 'top',
                         container: 'top-center',
@@ -328,13 +328,12 @@ const Jobs = () => {
                     });
                 });
         } else {
-            console.log(watch());
             axios
                 .post(`v1/job-offer`, watch())
                 .then((response) => {
                     if (response.status == 201 || response.status == 200) {
                         Store.addNotification({
-                            message: 'Usuário criado com sucesso !!',
+                            message: 'Vaga criada com sucesso !!',
                             type: 'success',
                             insert: 'top',
                             container: 'top-center',
@@ -351,7 +350,7 @@ const Jobs = () => {
                 })
                 .catch((err) => {
                     Store.addNotification({
-                        message: 'Erro ao criar o usuário, tente novamente !!',
+                        message: 'Erro ao atualizar a vaga, tente novamente !!',
                         type: 'danger',
                         insert: 'top',
                         container: 'top-center',
@@ -638,14 +637,14 @@ const Jobs = () => {
                         Ver Candidaturas
                     </Button>
                 </ContainerButtonGrid>
-                <Box sx={{ width: '100%', height: '40rem', padding: '0rem 1.5rem' }}>
+                <Box sx={{ width: '100%', height: '33rem', padding: '0rem 1.5rem' }}>
                     <DataTable
                         filterDisplay="row"
                         size="normal"
                         value={data}
                         paginator
                         loading={loadingTable}
-                        rows={8}
+                        rows={6}
                         width="3rem"
                         rowsPerPageOptions={[5, 10, 25, 50]}
                         selectionMode={'single'}
@@ -663,7 +662,7 @@ const Jobs = () => {
                             field="id"
                             sortable
                             filter
-                            style={{ width: '20%', textAlign: 'center' }}
+                            style={{ width: '5%', textAlign: 'center' }}
                             header="ID"
                         ></Column>
                         <Column

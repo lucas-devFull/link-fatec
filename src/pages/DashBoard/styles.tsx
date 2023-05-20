@@ -3,7 +3,8 @@ import styled from 'styled-components';
 export const ContainerCard = styled.div`
     display: flex;
     width: 100%;
-    height: 8rem;
+    height: auto;
+    flex-wrap: wrap;
     justify-content: space-around;
     align-items: center;
 
@@ -11,6 +12,7 @@ export const ContainerCard = styled.div`
         display: flex;
         flex-direction: row;
         cursor: pointer;
+        padding: 0.3rem 0rem;
     }
 
     & > div > div > div > div > p {
@@ -19,7 +21,7 @@ export const ContainerCard = styled.div`
         font-size: 2rem;
     }
     & > div > div:first-child {
-        width: 8rem;
+        width: 7rem;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -30,11 +32,11 @@ export const ContainerCard = styled.div`
     }
 
     & > div > div:last-child > div {
-        padding: 1rem;
+        padding: 0.5rem 1rem;
     }
 
     & > div > div:last-child {
-        width: 18rem;
+        width: 13rem;
         height: 100%;
         border-radius: 0px 6px 6px 0px;
     }
@@ -45,15 +47,16 @@ export const ContainerDashboard = styled.div`
 `;
 
 export const ContainerCharts = styled.div`
-    height: 88%;
+    height: auto;
     width: 100%;
     display: flex;
     justify-content: space-around;
-    padding: 6rem 3rem 5rem 3rem;
+    flex-wrap: wrap;
+    padding: 3rem 3rem 2rem 3rem;
     & > div {
         /* display: flex; */
         /* justify-content: center; */
         /* align-items: center; */
-        width: 35rem;
+        width: 20rem;
     }
 `;

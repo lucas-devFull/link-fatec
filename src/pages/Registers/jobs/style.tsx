@@ -10,7 +10,7 @@ export const ContainerRegister = styled.div`
     width: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
 `;
 
 export const ContainerGrid = styled.div``;

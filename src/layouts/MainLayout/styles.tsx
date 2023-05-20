@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const ContainerPage = styled.div`
-    overflow-y: hidden;
+    overflow-x: hidden;
     height: 100vh;
 
     display: grid;
@@ -23,6 +23,7 @@ export const ContainerPage = styled.div`
     & {
         grid-template-areas:
             'nav nav'
+            'menu content'
             'menu content';
     }
 `;
