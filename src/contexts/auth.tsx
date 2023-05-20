@@ -8,6 +8,7 @@ type dataUser = {
     login_type: string | number;
     name: string;
     id: number;
+    profile_picture: string | null;
 };
 interface DataLogin {
     token: {
@@ -39,6 +40,7 @@ const AuthProvider = ({ children }: any) => {
             try {
                 const token = JSON.parse(storagedToken);
                 setAxiosToken(token.token.access_token);
+                setUser(token.data);
                 setLogged(true);
             } catch (error) {
                 redirect('/');
@@ -70,7 +72,7 @@ const AuthProvider = ({ children }: any) => {
     };
 
     const signOut = (callback: () => void) => {
-        setUser(null);
+        // setUser(null);
         setLogged(false);
         localStorage.clear();
         callback();

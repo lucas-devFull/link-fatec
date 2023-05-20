@@ -323,6 +323,7 @@ const Student = () => {
 
                     <ContainerFieldsForm>
                         <ContainerFields>
+                            <InputLabel> RA </InputLabel>
                             <div className="p-inputgroup">
                                 <span className="p-inputgroup-addon">
                                     <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
@@ -337,6 +338,7 @@ const Student = () => {
                         </ContainerFields>
 
                         <ContainerFields>
+                            <InputLabel> Nome completo </InputLabel>
                             <div className="p-inputgroup">
                                 <span className="p-inputgroup-addon">
                                     <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
@@ -352,6 +354,7 @@ const Student = () => {
                     </ContainerFieldsForm>
                     <ContainerFieldsForm>
                         <ContainerFields>
+                            <InputLabel> Email </InputLabel>
                             <div className="p-inputgroup">
                                 <span className="p-inputgroup-addon">
                                     <FontAwesomeIcon icon={icon({ name: 'circle-user' })} />
@@ -366,6 +369,8 @@ const Student = () => {
                         </ContainerFields>
 
                         <ContainerFields>
+                            <InputLabel> Senha </InputLabel>
+
                             <div className="p-inputgroup">
                                 <span className="p-inputgroup-addon">
                                     <FontAwesomeIcon icon={icon({ name: 'lock' })} />
@@ -464,7 +469,7 @@ const Student = () => {
                             sortable
                             filter
                             style={{ width: '20%', textAlign: 'center' }}
-                            header="Name"
+                            header="Nome"
                         ></Column>
                         <Column
                             field="email"

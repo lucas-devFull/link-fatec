@@ -16,7 +16,7 @@ import { locale, addLocale } from 'primereact/api';
 import { InputText } from 'primereact/inputtext';
 import { Divider } from 'primereact/divider';
 import { Column } from 'primereact/column';
-import { Box, Button, CircularProgress } from '@mui/material';
+import { Box, Button, CircularProgress, InputLabel } from '@mui/material';
 import { Dialog } from 'primereact/dialog';
 import axios from '../../../services/Api';
 import { TabView, TabPanel } from 'primereact/tabview';
@@ -30,7 +30,6 @@ import { isValidEmail } from '../../../utils';
 
 type propsFieldsCompany = {
     id?: number;
-    description: string;
     full_name: string;
     password: string;
     email: string;
@@ -40,7 +39,7 @@ type propsFieldsCompany = {
     number: string;
     neighborhood: string;
     complement: string;
-    zipCode: string;
+    zip_code: string;
     city: string;
     state: string;
     country: string;
@@ -91,8 +90,7 @@ const Company = () => {
     };
 
     const getImg = (): string => {
-        const id = watch('id');
-        if (id && id !== null && id > 0) {
+        if (previewImg && previewImg !== null && typeof previewImg === 'string') {
             return previewImg;
         }
 
@@ -125,7 +123,27 @@ const Company = () => {
                     if (response.status == 201 || response.status == 200) {
                         setValue('email', response.data.email);
                         setValue('full_name', response.data.name);
+
+                        setValue('zip_code', response.data.address.zip_code);
+                        setValue('city', response.data.address.city);
+                        setValue('complement', response.data.address.complement);
+                        setValue('country', response.data.address.country);
+                        setValue('neighborhood', response.data.address.neighborhood);
+                        setValue('number', response.data.address.number);
+                        setValue('state', response.data.address.state);
+                        setValue('street', response.data.address.street);
+
                         setPreviewImg(response.data.profile_picture);
+
+                        if (
+                            response &&
+                            response.data &&
+                            response.data.profile_picture &&
+                            response.data.profile_picture !== null &&
+                            typeof response.data.profile_picture === 'string'
+                        ) {
+                            setNameImg(response.data.profile_picture.slice(31));
+                        }
                     }
                 })
                 .catch((err) => {
@@ -244,16 +262,28 @@ const Company = () => {
     }, []);
 
     const getZipCode = (zipCode: string) => {
-        axios
-            .get(`https://viacep.com.br/ws/${zipCode}/json/`)
-            .then((response) => {
-                if (response.status == 201 || response.status == 200) {
-                    setValue('street', response.data.logradouro);
-                    setValue('city', response.data.localidade);
-                    setValue('neighborhood', response.data.bairro);
-                    setValue('state', response.data.uf);
+        fetch(`https://viacep.com.br/ws/${zipCode}/json/`)
+            .then((response) => response.json())
+            .then((res) => {
+                if (res && res.erro) {
+                    Store.addNotification({
+                        message: 'Erro ao buscar o CEP, tente novamente !!',
+                        type: 'danger',
+                        insert: 'top',
+                        container: 'top-center',
+                        width: 350,
+                        dismiss: {
+                            duration: 1000,
+                            onScreen: true,
+                        },
+                    });
+                } else {
+                    setValue('street', res.logradouro);
+                    setValue('city', res.localidade);
+                    setValue('neighborhood', res.bairro);
+                    setValue('state', res.uf);
                     setValue('country', 'Brasil');
-                    setValue('zipCode', response.data.cep);
+                    setValue('zip_code', res.cep);
                     setZipCode(false);
                 }
             })
@@ -263,7 +293,7 @@ const Company = () => {
                 setValue('neighborhood', '');
                 setValue('state', '');
                 setValue('country', '');
-                setValue('zipCode', '');
+                setValue('zip_code', '');
                 setZipCode(true);
             });
     };
@@ -274,11 +304,11 @@ const Company = () => {
     };
 
     const getErrorZipCode = () => {
-        if (errors.zipCode && errors.zipCode.type == 'minLength') {
+        if (errors.zip_code && errors.zip_code.type == 'minLength') {
             return <p> Tamanho minimo de 8 caracters</p>;
         }
 
-        return errors.zipCode && <p>Este campo é obrigatório</p>;
+        return errors.zip_code && <p>Este campo é obrigatório</p>;
     };
 
     const saveCompany = () => {
@@ -317,7 +347,7 @@ const Company = () => {
                             onScreen: true,
                         },
                         onRemoval: () => {
-                            resetForm();
+                            setLoading(false);
                         },
                     });
                 });
@@ -354,7 +384,7 @@ const Company = () => {
                             onScreen: true,
                         },
                         onRemoval: () => {
-                            resetForm();
+                            setLoading(false);
                         },
                     });
                 });
@@ -372,6 +402,7 @@ const Company = () => {
                     setVisible(false);
                     setLoading(false);
                     setPreviewImg(null);
+                    setZipCode(false);
                     setSelectedProducts(null);
                     setNameImg(null);
                     reset();
@@ -382,7 +413,8 @@ const Company = () => {
                         <TabView activeIndex={0}>
                             <TabPanel header="Perfil" leftIcon="pi pi-user mr-2">
                                 <ContainerFieldsForm>
-                                    <ContainerFields>
+                                    <ContainerFields className="endereco">
+                                        <InputLabel> Nome Completo </InputLabel>
                                         <div className="p-inputgroup">
                                             <span className="p-inputgroup-addon">
                                                 <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
@@ -395,22 +427,8 @@ const Company = () => {
                                         </div>
                                         {errors.full_name && <p>Este campo é obrigatório</p>}
                                     </ContainerFields>
-                                    <ContainerFields>
-                                        <div className="p-inputgroup">
-                                            <span className="p-inputgroup-addon">
-                                                <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
-                                            </span>
-                                            <InputText
-                                                {...register('description', { required: true })}
-                                                placeholder="Descrição"
-                                                className={errors.description ? 'p-invalid' : ''}
-                                            />
-                                        </div>
-                                        {errors.description && <p>Este campo é obrigatório</p>}
-                                    </ContainerFields>
-                                </ContainerFieldsForm>
-                                <ContainerFieldsForm>
-                                    <ContainerFields>
+                                    <ContainerFields className="endereco">
+                                        <InputLabel> Email </InputLabel>
                                         <div className="p-inputgroup">
                                             <span className="p-inputgroup-addon">
                                                 <FontAwesomeIcon icon={icon({ name: 'circle-user' })} />
@@ -423,7 +441,8 @@ const Company = () => {
                                         </div>
                                         {errors.email && <p> Preencha o campo corretamente </p>}
                                     </ContainerFields>
-                                    <ContainerFields>
+                                    <ContainerFields className="endereco">
+                                        <InputLabel> Senha </InputLabel>
                                         <div className="p-inputgroup">
                                             <span className="p-inputgroup-addon">
                                                 <FontAwesomeIcon icon={icon({ name: 'lock' })} />
@@ -440,6 +459,7 @@ const Company = () => {
                                 </ContainerFieldsForm>
                                 <ContainerFieldsForm>
                                     <ContainerFields>
+                                        <InputLabel> Foto de perfil </InputLabel>
                                         <ContainerInputFile className="p-inputgroup">
                                             <span className="p-inputgroup-addon">
                                                 <FontAwesomeIcon icon={icon({ name: 'image' })} />
@@ -489,6 +509,7 @@ const Company = () => {
                             <TabPanel header="Endereço" leftIcon="pi pi-id-card fs-2 mr-2">
                                 <ContainerFieldsForm>
                                     <ContainerFields className="endereco">
+                                        <InputLabel> CEP </InputLabel>
                                         <div className="p-inputgroup">
                                             <span className="p-inputgroup-addon">
                                                 <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
@@ -498,8 +519,8 @@ const Company = () => {
                                                 id="phone"
                                                 placeholder="digite um CEP 99999999"
                                                 maxLength={9}
-                                                {...register('zipCode', { required: true, minLength: 8 })}
-                                                className={errors.zipCode ? 'p-invalid' : ''}
+                                                {...register('zip_code', { required: true, minLength: 8 })}
+                                                className={errors.zip_code ? 'p-invalid' : ''}
                                                 onChange={(e) => {
                                                     if (e.target.value && e.target.value.length > 7) {
                                                         getZipCode(e.target.value);
@@ -511,6 +532,7 @@ const Company = () => {
                                     </ContainerFields>
 
                                     <ContainerFields style={{ width: '45%' }}>
+                                        <InputLabel> Rua </InputLabel>
                                         <div className="p-inputgroup">
                                             <span className="p-inputgroup-addon">
                                                 <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
@@ -526,6 +548,7 @@ const Company = () => {
                                     </ContainerFields>
 
                                     <ContainerFields style={{ width: '20%' }}>
+                                        <InputLabel> Número </InputLabel>
                                         <div className="p-inputgroup">
                                             <span className="p-inputgroup-addon">
                                                 <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
@@ -534,7 +557,6 @@ const Company = () => {
                                                 {...register('number', { required: true })}
                                                 placeholder="Número"
                                                 className={errors.number ? 'p-invalid' : ''}
-                                                disabled={zipCode}
                                             />
                                         </div>
                                         {errors.number && <p>Este campo é obrigatório</p>}
@@ -542,7 +564,8 @@ const Company = () => {
                                 </ContainerFieldsForm>
 
                                 <ContainerFieldsForm>
-                                    <ContainerFields className="endereco">
+                                    <ContainerFields className="endereco2">
+                                        <InputLabel> Bairro </InputLabel>
                                         <div className="p-inputgroup">
                                             <span className="p-inputgroup-addon">
                                                 <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
@@ -556,7 +579,8 @@ const Company = () => {
                                         </div>
                                         {errors.neighborhood && <p>Este campo é obrigatório</p>}
                                     </ContainerFields>
-                                    <ContainerFields className="endereco">
+                                    <ContainerFields className="endereco2">
+                                        <InputLabel> Cidade </InputLabel>
                                         <div className="p-inputgroup">
                                             <span className="p-inputgroup-addon">
                                                 <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
@@ -571,7 +595,23 @@ const Company = () => {
                                         {errors.city && <p>Este campo é obrigatório</p>}
                                     </ContainerFields>
 
-                                    <ContainerFields className="endereco">
+                                    <ContainerFields className="endereco2">
+                                        <InputLabel> Estado </InputLabel>
+                                        <div className="p-inputgroup">
+                                            <span className="p-inputgroup-addon">
+                                                <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
+                                            </span>
+                                            <InputText
+                                                {...register('state', { required: true })}
+                                                placeholder="Estado"
+                                                className={errors.state ? 'p-invalid' : ''}
+                                                disabled={zipCode}
+                                            />
+                                        </div>
+                                        {errors.state && <p>Este campo é obrigatório</p>}
+                                    </ContainerFields>
+                                    <ContainerFields className="endereco2">
+                                        <InputLabel> País </InputLabel>
                                         <div className="p-inputgroup">
                                             <span className="p-inputgroup-addon">
                                                 <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
@@ -589,6 +629,7 @@ const Company = () => {
 
                                 <ContainerFieldsForm>
                                     <ContainerFields style={{ width: '100%' }}>
+                                        <InputLabel> Complemento </InputLabel>
                                         <div className="p-inputgroup">
                                             <span className="p-inputgroup-addon">
                                                 <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
@@ -682,7 +723,14 @@ const Company = () => {
                             sortable
                             filter
                             style={{ width: '20%', textAlign: 'center' }}
-                            header="Name"
+                            header="Nome"
+                        ></Column>
+                        <Column
+                            field="email"
+                            sortable
+                            filter
+                            style={{ width: '20%', textAlign: 'center' }}
+                            header="Email"
                         ></Column>
                     </DataTable>
                 </Box>

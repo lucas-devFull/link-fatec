@@ -58,3 +58,79 @@ export const ContainerLoginPassword = styled.div`
         width: 45%;
     }
 `;
+
+export const ContainerPreviewImg = styled.div`
+    width: 100%;
+    justify-content: center;
+    height: 24rem;
+    align-items: flex-start;
+    display: flex;
+    flex-direction: row;
+
+    & > img {
+        width: 100%;
+        max-height: 100%;
+        padding: 0.5rem;
+    }
+
+    & > div {
+        width: 2.5rem;
+        height: 2rem;
+        background-color: #333333;
+        cursor: pointer;
+        z-index: 106;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-left: -3rem;
+        margin-top: 0.5rem;
+        color: white;
+    }
+
+    & > div:hover {
+        font-size: 1.1em;
+        transition: ease-in;
+    }
+`;
+
+export const ContainerInputFile = styled.div`
+    & > label {
+        position: relative;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: 'Roboto', sans-serif;
+        font-size: 1rem;
+        color: #495057;
+        background: #ffffff;
+        padding: 0.75rem 0.75rem;
+        border: 1px solid #ced4da;
+        transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+        appearance: none;
+        cursor: pointer;
+        border-top-right-radius: 6px;
+        border-bottom-right-radius: 6px;
+    }
+
+    & > input[type='file'] {
+        display: none;
+    }
+`;
+
+export const ContainerFieldsForm = styled.div`
+    display: flex;
+    justify-content: space-between;
+
+    & > div {
+        width: 48%;
+    }
+
+    & > div.login {
+        max-width: 32% !important;
+    }
+
+    & > div:not(:last-child) {
+        padding-bottom: 0.5rem;
+    }
+`;

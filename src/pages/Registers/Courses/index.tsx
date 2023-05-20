@@ -13,7 +13,7 @@ import { locale, addLocale } from 'primereact/api';
 import { InputText } from 'primereact/inputtext';
 import { Divider } from 'primereact/divider';
 import { Column } from 'primereact/column';
-import { Box, Button, CircularProgress } from '@mui/material';
+import { Box, Button, CircularProgress, InputLabel } from '@mui/material';
 import { Dialog } from 'primereact/dialog';
 import axios from '../../../services/Api';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
@@ -176,14 +176,70 @@ const Couses = () => {
     }, []);
 
     const saveCourse = () => {
-        setLoading(!loading);
-        axios
-            .post(`v1/course`, watch())
-            .then((response) => {
-                if (response.status == 201 || response.status == 200) {
+        setLoading(true);
+        const id = watch('id');
+        if (id && id !== null && id > 0) {
+            axios
+                .put(`v1/course`, watch())
+                .then((response) => {
+                    if (response.status == 201 || response.status == 200) {
+                        Store.addNotification({
+                            message: 'Usuário atualizado com sucesso !!',
+                            type: 'success',
+                            insert: 'top',
+                            container: 'top-center',
+                            width: 350,
+                            dismiss: {
+                                duration: 2000,
+                                onScreen: true,
+                            },
+                            onRemoval: () => {
+                                resetForm();
+                            },
+                        });
+                    }
+                })
+                .catch((err) => {
                     Store.addNotification({
-                        message: 'Usuário criado com sucesso !!',
-                        type: 'success',
+                        message: 'Erro ao atualizar o usuário, tente novamente !!',
+                        type: 'danger',
+                        insert: 'top',
+                        container: 'top-center',
+                        width: 350,
+                        dismiss: {
+                            duration: 2000,
+                            onScreen: true,
+                        },
+                        onRemoval: () => {
+                            setLoading(false);
+                        },
+                    });
+                });
+        } else {
+            axios
+                .post(`v1/course`, watch())
+                .then((response) => {
+                    if (response.status == 201 || response.status == 200) {
+                        Store.addNotification({
+                            message: 'Usuário criado com sucesso !!',
+                            type: 'success',
+                            insert: 'top',
+                            container: 'top-center',
+                            width: 350,
+                            dismiss: {
+                                duration: 2000,
+                                onScreen: true,
+                            },
+                            onRemoval: () => {
+                                resetForm();
+                            },
+                        });
+                    }
+                })
+                .catch((err) => {
+                    Store.addNotification({
+                        message: 'Erro ao criar o usuário, tente novamente !!',
+                        type: 'danger',
                         insert: 'top',
                         container: 'top-center',
                         width: 350,
@@ -195,24 +251,8 @@ const Couses = () => {
                             resetForm();
                         },
                     });
-                }
-            })
-            .catch((err) => {
-                Store.addNotification({
-                    message: 'Erro ao criar o usuário, tente novamente !!',
-                    type: 'danger',
-                    insert: 'top',
-                    container: 'top-center',
-                    width: 350,
-                    dismiss: {
-                        duration: 2000,
-                        onScreen: true,
-                    },
-                    onRemoval: () => {
-                        resetForm();
-                    },
                 });
-            });
+        }
     };
 
     return (
@@ -229,6 +269,7 @@ const Couses = () => {
             >
                 <ContainerForm onSubmit={handleSubmit(saveCourse)}>
                     <ContainerFields>
+                        <InputLabel> Nome </InputLabel>
                         <div className="p-inputgroup">
                             <span className="p-inputgroup-addon">
                                 <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
@@ -243,6 +284,7 @@ const Couses = () => {
                     </ContainerFields>
 
                     <ContainerFields>
+                        <InputLabel> Descrição do curso </InputLabel>
                         <div className="p-inputgroup">
                             <span className="p-inputgroup-addon">
                                 <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
@@ -330,7 +372,7 @@ const Couses = () => {
                             sortable
                             filter
                             style={{ width: '20%', textAlign: 'center' }}
-                            header="Name"
+                            header="Nome"
                         ></Column>
                         <Column
                             field="description"

@@ -20,6 +20,9 @@ import { SPACING_INLINE_08 } from '../../utils/stylesGlobals';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import Logo from '../Avatar';
+import { Avatar } from '@mui/material';
+import logoFatec from '../../assets/images/logoFatec.png';
 
 export interface NavigationItemProps extends React.HTMLAttributes<HTMLDivElement> {
     callback: () => void;
@@ -59,9 +62,25 @@ const Navigation: React.FC<Props> = ({ items, nameUser = 'Lucas Conceição', Ic
         >
             <NavHeader>
                 <ContainerLogo onClick={() => navigate('/')}>
-                    <FontAwesomeIcon size="2x" icon={icon({ name: 'circle-user' })} />
+                    {/* <Logo></Logo    > */}
+                    {/* <FontAwesomeIcon size="2x" icon={icon({ name: 'circle-user' })} /> */}
+                    <Avatar
+                        src={logoFatec}
+                        sx={{
+                            backgroundColor: '#F0F0F0',
+                            padding: '0.5rem',
+                            width: 45,
+                            height: 45,
+                            margin: '0rem 2rem 0rem 0.3rem',
+                        }}
+                    ></Avatar>
                 </ContainerLogo>
-                <div onClick={() => navigate('/perfil')}>{nameUser}</div>
+                <div
+                    style={{ width: 'max-content', display: 'flex', justifyContent: 'space-around', margin: '0 .5rem' }}
+                    onClick={() => navigate('/perfil')}
+                >
+                    {nameUser}
+                </div>
             </NavHeader>
 
             <HrStyled />

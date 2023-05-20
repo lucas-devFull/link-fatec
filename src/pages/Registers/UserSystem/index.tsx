@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import {
     ContainerButtonGrid,
     ContainerFields,
+    ContainerFieldsForm,
     ContainerForm,
     ContainerGrid,
+    ContainerInputFile,
     ContainerLoginPassword,
     ContainerPopUpButton,
     ContainerRegister,
@@ -16,7 +18,7 @@ import { Password } from 'primereact/password';
 import { Divider } from 'primereact/divider';
 
 import { Column } from 'primereact/column';
-import { Box, Button, CircularProgress } from '@mui/material';
+import { Box, Button, CircularProgress, InputLabel } from '@mui/material';
 import { Dialog } from 'primereact/dialog';
 import axios from '../../../services/Api';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
@@ -24,6 +26,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useForm } from 'react-hook-form';
 import { isValidEmail } from '../../../utils';
 import { ReactNotifications, Store } from 'react-notifications-component';
+import { ContainerPreviewImg } from '../Company/style';
 
 type propsFieldsUser = {
     id?: number;
@@ -31,6 +34,7 @@ type propsFieldsUser = {
     name: string;
     email: string;
     password?: string;
+    profile_picture: any | null;
 };
 
 const UserSystem = () => {
@@ -47,6 +51,8 @@ const UserSystem = () => {
     } = useForm<propsFieldsUser>();
     const [selectedProducts, setSelectedProducts] = useState<any>();
     const [visible, setVisible] = useState<boolean>(false);
+    const [previewImg, setPreviewImg] = useState<any | null>(null);
+    const [nameImg, setNameImg] = useState<string | null>(null);
 
     addLocale('pt', {
         startsWith: 'Começa com',
@@ -61,6 +67,8 @@ const UserSystem = () => {
         setVisible(false);
         getAllUsers();
         setSelectedProducts(null);
+        setPreviewImg(null);
+        setNameImg(null);
         reset();
     };
 
@@ -72,7 +80,33 @@ const UserSystem = () => {
             setValue('full_name', values.name);
             setValue('email', values.email);
             setValue('password', values.password);
+            setPreviewImg(values.profile_picture);
+
+            if (values && values.profile_picture !== null && typeof values.profile_picture === 'string') {
+                setNameImg(values.profile_picture.slice(31));
+            }
         }
+    };
+
+    const getImg = (): string => {
+        if (previewImg && previewImg !== null && typeof previewImg === 'string') {
+            return previewImg;
+        }
+
+        return URL.createObjectURL(previewImg);
+    };
+
+    const convertImgBase64 = (file: FileList, calback: (reader: any) => void) => {
+        const reader = new FileReader();
+        reader.onloadend = function () {
+            calback(reader.result);
+        };
+        reader.readAsDataURL(file[0]);
+    };
+
+    const getLabelImage = () => {
+        const labelImage = nameImg && nameImg !== null ? nameImg : 'Selecione um arquivo';
+        return labelImage;
     };
 
     const deleteUserById = () => {
@@ -190,7 +224,7 @@ const UserSystem = () => {
             axios
                 .put(`v1/admin`, watch())
                 .then((response) => {
-                    if (response.status == 201) {
+                    if (response.status == 201 || response.status == 200) {
                         Store.addNotification({
                             message: 'Usuário atualizado com sucesso !!',
                             type: 'success',
@@ -271,25 +305,34 @@ const UserSystem = () => {
                 header="Informações"
                 visible={visible}
                 style={{ width: '50vw' }}
-                onHide={() => resetForm()}
+                onHide={() => {
+                    setVisible(false);
+                    setLoading(false);
+                    setPreviewImg(null);
+                    setSelectedProducts(null);
+                    setNameImg(null);
+                    reset();
+                }}
             >
                 <ContainerForm onSubmit={handleSubmit(saveUser)}>
-                    <ContainerFields>
-                        <div className="p-inputgroup">
-                            <span className="p-inputgroup-addon">
-                                <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
-                            </span>
-                            <InputText
-                                {...register('full_name', { required: true })}
-                                placeholder="Nome Completo"
-                                className={errors.full_name ? 'p-invalid' : ''}
-                            />
-                        </div>
-                        {errors.full_name && <p>Este campo é obrigatório</p>}
-                    </ContainerFields>
+                    <ContainerFieldsForm>
+                        <ContainerFields className="login">
+                            <InputLabel> Nome completo </InputLabel>
+                            <div className="p-inputgroup">
+                                <span className="p-inputgroup-addon">
+                                    <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
+                                </span>
+                                <InputText
+                                    {...register('full_name', { required: true })}
+                                    placeholder="Nome Completo"
+                                    className={errors.full_name ? 'p-invalid' : ''}
+                                />
+                            </div>
+                            {errors.full_name && <p>Este campo é obrigatório</p>}
+                        </ContainerFields>
 
-                    <ContainerLoginPassword>
-                        <ContainerFields>
+                        <ContainerFields className="login">
+                            <InputLabel> Email </InputLabel>
                             <div className="p-inputgroup">
                                 <span className="p-inputgroup-addon">
                                     <FontAwesomeIcon icon={icon({ name: 'circle-user' })} />
@@ -303,7 +346,8 @@ const UserSystem = () => {
                             {errors.email && <p> Preencha o campo corretamente </p>}
                         </ContainerFields>
 
-                        <ContainerFields>
+                        <ContainerFields className="login">
+                            <InputLabel> Senha </InputLabel>
                             <div className="p-inputgroup">
                                 <span className="p-inputgroup-addon">
                                     <FontAwesomeIcon icon={icon({ name: 'lock' })} />
@@ -318,7 +362,56 @@ const UserSystem = () => {
                             </div>
                             {errors.password && <p>Este campo é obrigatório</p>}
                         </ContainerFields>
-                    </ContainerLoginPassword>
+                    </ContainerFieldsForm>
+
+                    <ContainerFieldsForm>
+                        <ContainerFields>
+                            <InputLabel> Foto de perfil </InputLabel>
+                            <ContainerInputFile className="p-inputgroup">
+                                <span className="p-inputgroup-addon">
+                                    <FontAwesomeIcon icon={icon({ name: 'image' })} />
+                                </span>
+                                <label htmlFor="file" className={errors.profile_picture ? 'p-invalid' : ''}>
+                                    {getLabelImage()}
+                                </label>
+                                <InputText
+                                    id="file"
+                                    type="file"
+                                    accept="image/*"
+                                    {...register('profile_picture')}
+                                    placeholder="Imagem Perfil"
+                                    {...register('profile_picture', { required: false })}
+                                    // value={dataEdition?.profile_picture.target.files}
+                                    onChange={(e) => {
+                                        if (e && e.target && e.target.files && e.target.files?.length > 0) {
+                                            setPreviewImg(e.target.files[0]);
+                                            setNameImg(e.target.files[0].name);
+                                            convertImgBase64(e.target.files, (reader) => {
+                                                setValue('profile_picture', reader);
+                                            });
+                                        }
+                                    }}
+                                />
+                            </ContainerInputFile>
+                            {errors.profile_picture && <p>Este campo é obrigatório</p>}
+                        </ContainerFields>
+                        <ContainerFields>
+                            {previewImg && (
+                                <ContainerPreviewImg>
+                                    <img src={getImg()} />
+                                    <div
+                                        onClick={() => {
+                                            setPreviewImg(null);
+                                            setNameImg(null);
+                                            setValue('profile_picture', '');
+                                        }}
+                                    >
+                                        <FontAwesomeIcon icon={icon({ name: 'xmark' })} />
+                                    </div>
+                                </ContainerPreviewImg>
+                            )}
+                        </ContainerFields>
+                    </ContainerFieldsForm>
 
                     <Divider />
                     <div style={{ display: 'flex', justifyContent: 'end' }}>
@@ -381,7 +474,7 @@ const UserSystem = () => {
                         onRowUnselect={() => reset()}
                     >
                         <Column field="id" sortable filter style={{ width: '25%' }} header="ID"></Column>
-                        <Column field="name" sortable filter style={{ width: '25%' }} header="Name"></Column>
+                        <Column field="name" sortable filter style={{ width: '25%' }} header="Nome"></Column>
                         <Column field="email" sortable filter style={{ width: '25%' }} header="Email"></Column>
                     </DataTable>
                 </Box>

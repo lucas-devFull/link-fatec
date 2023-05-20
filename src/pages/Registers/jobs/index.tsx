@@ -29,6 +29,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { ReactNotifications, Store } from 'react-notifications-component';
 import './style.css';
 import { ContainerFieldsForm } from './style';
+import { useAuth } from '../../../contexts/auth';
 
 type propsFieldsJobs = {
     id?: number;
@@ -42,6 +43,7 @@ type propsFieldsJobs = {
 };
 
 const Jobs = () => {
+    const { user } = useAuth();
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [loadingTable, setLoadingTable] = useState<boolean>(false);
@@ -55,7 +57,8 @@ const Jobs = () => {
         formState: { errors },
     } = useForm<propsFieldsJobs>();
     const [courses, setCourses] = useState<Array<Record<string, string>> | []>([]);
-    const [company, setJobs] = useState<Array<Record<string, string>> | []>([]);
+    const [company, setCompany] = useState<Array<Record<string, string>> | []>([]);
+    const [is_active, setIsActive] = useState<boolean>(true);
     const [experience, setExperience] = useState<Array<Record<string, string>> | []>([
         {
             id: '0',
@@ -238,14 +241,16 @@ const Jobs = () => {
         }
     };
     const getCompany = () => {
-        axios
-            .get('/v1/company')
-            .then((response) => {
-                setJobs(response.data);
-            })
-            .catch((error) => {
-                setJobs([]);
-            });
+        if (user && user.login_type != '1') {
+            axios
+                .get('/v1/company')
+                .then((response) => {
+                    setCompany(response.data);
+                })
+                .catch((error) => {
+                    setCompany([]);
+                });
+        }
     };
 
     const getCourses = () => {
@@ -263,7 +268,7 @@ const Jobs = () => {
         setLoadingTable(true);
 
         axios
-            .get('/v1/job-offers')
+            .get('/v1/user/job-offers')
             .then((response) => {
                 setData(response.data);
                 setLoadingTable(false);
@@ -385,7 +390,7 @@ const Jobs = () => {
                 <ContainerForm onSubmit={handleSubmit(saveJobs)}>
                     <ContainerFields>
                         <ContainerFieldsForm>
-                            <ContainerFields className="campos">
+                            <ContainerFields className={user && user.login_type != '1' ? 'campos' : ''}>
                                 <InputLabel id="target_course_id"> Curso </InputLabel>
 
                                 <Controller
@@ -411,33 +416,35 @@ const Jobs = () => {
                                 />
                                 {errors.target_course_id && <p>Este campo é obrigatório</p>}
                             </ContainerFields>
-                            <ContainerFields className="campos">
-                                <InputLabel id="company_id"> Empresa </InputLabel>
+                            {user && user.login_type != '1' && (
+                                <ContainerFields className="campos">
+                                    <InputLabel id="company_id"> Empresa </InputLabel>
 
-                                <Controller
-                                    name="company_id"
-                                    control={control}
-                                    rules={{ required: true }}
-                                    render={({ field, fieldState }) => (
-                                        <Dropdown
-                                            style={{ width: '100% !important' }}
-                                            id={field.name}
-                                            value={field.value}
-                                            optionLabel="name"
-                                            placeholder="Selecione uma empresa"
-                                            options={company}
-                                            focusInputRef={field.ref}
-                                            onChange={(e) => {
-                                                field.onChange(e.value);
-                                                control._updateFieldArray('company_id', e.value.id);
-                                            }}
-                                            className={errors.company_id ? 'dropSelect p-invalid' : 'dropSelect'}
-                                        />
-                                    )}
-                                />
-                                {errors.company_id && <p>Este campo é obrigatório</p>}
-                            </ContainerFields>
-                            <ContainerFields className="campos">
+                                    <Controller
+                                        name="company_id"
+                                        control={control}
+                                        rules={{ required: true }}
+                                        render={({ field, fieldState }) => (
+                                            <Dropdown
+                                                style={{ width: '100% !important' }}
+                                                id={field.name}
+                                                value={field.value}
+                                                optionLabel="name"
+                                                placeholder="Selecione uma empresa"
+                                                options={company}
+                                                focusInputRef={field.ref}
+                                                onChange={(e) => {
+                                                    field.onChange(e.value);
+                                                    control._updateFieldArray('company_id', e.value.id);
+                                                }}
+                                                className={errors.company_id ? 'dropSelect p-invalid' : 'dropSelect'}
+                                            />
+                                        )}
+                                    />
+                                    {errors.company_id && <p>Este campo é obrigatório</p>}
+                                </ContainerFields>
+                            )}
+                            <ContainerFields className={user && user.login_type != '1' ? 'campos' : ''}>
                                 <InputLabel id="experience"> Experiência </InputLabel>
 
                                 <Controller
@@ -467,6 +474,7 @@ const Jobs = () => {
 
                         <ContainerFieldsForm>
                             <ContainerFields className="campos">
+                                <InputLabel> Descrição da vaga </InputLabel>
                                 <div className="p-inputgroup">
                                     <span className="p-inputgroup-addon">
                                         <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
@@ -481,6 +489,7 @@ const Jobs = () => {
                             </ContainerFields>
 
                             <ContainerFields className="campos">
+                                <InputLabel> Área de atuação </InputLabel>
                                 <div className="p-inputgroup">
                                     <span className="p-inputgroup-addon">
                                         <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
@@ -495,32 +504,36 @@ const Jobs = () => {
                             </ContainerFields>
 
                             <ContainerFields className="campos">
-                                <div
-                                    style={{
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                        flexDirection: 'column',
-                                    }}
-                                >
-                                    <InputLabel id="is_active"> Vaga Ativa </InputLabel>
+                                <div>
                                     <Controller
                                         name={'is_active'}
                                         control={control}
                                         rules={{ required: false }}
-                                        render={({ field, fieldState }) => (
-                                            <div>
-                                                <label htmlFor={field.name}></label>
-                                                <InputSwitch
-                                                    style={{ padding: '0.5em' }}
-                                                    inputId={field.name}
-                                                    checked={field.value}
-                                                    inputRef={field.ref}
-                                                    className={errors.is_active ? 'p-invalid' : ''}
-                                                    onChange={(e) => field.onChange(e.value)}
-                                                />
-                                            </div>
-                                        )}
+                                        render={({ field }) => {
+                                            return (
+                                                <div
+                                                    style={{
+                                                        display: 'flex',
+                                                        justifyContent: 'center',
+                                                        alignItems: 'center',
+                                                        flexDirection: 'column',
+                                                    }}
+                                                >
+                                                    <label htmlFor={field.name}> Vaga Ativa </label>
+                                                    <InputSwitch
+                                                        style={{ padding: '0.5em' }}
+                                                        inputId={field.name}
+                                                        checked={is_active}
+                                                        inputRef={field.ref}
+                                                        className={errors.is_active ? 'p-invalid' : ''}
+                                                        onChange={(e) => {
+                                                            field.onChange(e.value);
+                                                            setIsActive(!is_active);
+                                                        }}
+                                                    />
+                                                </div>
+                                            );
+                                        }}
                                     />
                                 </div>
                             </ContainerFields>
@@ -528,6 +541,7 @@ const Jobs = () => {
 
                         <ContainerFieldsForm>
                             <ContainerFields>
+                                <InputLabel> Foto promocional </InputLabel>
                                 <ContainerInputFile className="p-inputgroup">
                                     <span className="p-inputgroup-addon">
                                         <FontAwesomeIcon icon={icon({ name: 'image' })} />
@@ -614,6 +628,15 @@ const Jobs = () => {
                     >
                         Deletar
                     </Button>
+
+                    <Button
+                        onClick={deleteJobs}
+                        disabled={watch('id') != null ? false : true}
+                        variant="outlined"
+                        color="primary"
+                    >
+                        Ver Candidaturas
+                    </Button>
                 </ContainerButtonGrid>
                 <Box sx={{ width: '100%', height: '40rem', padding: '0rem 1.5rem' }}>
                     <DataTable
@@ -657,13 +680,15 @@ const Jobs = () => {
                             style={{ width: '20%', textAlign: 'center' }}
                             header="Curso direcionado"
                         ></Column>
-                        <Column
-                            field="company_name"
-                            sortable
-                            filter
-                            style={{ width: '20%', textAlign: 'center' }}
-                            header="Empresa"
-                        ></Column>
+                        {user && user?.login_type != '1' && (
+                            <Column
+                                field="company_name"
+                                sortable
+                                filter
+                                style={{ width: '20%', textAlign: 'center' }}
+                                header="Empresa"
+                            ></Column>
+                        )}
                         <Column
                             field="applied_students_count"
                             sortable

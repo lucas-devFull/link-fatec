@@ -13,7 +13,7 @@ export const ContainerLogin = styled.div`
     & > div > div:first-child {
         text-align: center;
         font-size: 3rem;
-        font-family: Resolve-Sans-Regular;
+        font-family: 'Roboto', sans-serif;
     }
 
     position: absolute;
@@ -49,7 +49,7 @@ export const InputLogin = styled.div`
         display: block;
         width: 100%;
         background: 0 0;
-        font-family: Montserrat-Regular;
+        font-family: 'Roboto', sans-serif;
         font-size: 18px;
         color: #555;
         line-height: 1.2;
@@ -130,7 +130,7 @@ export const InputLogin = styled.div`
     }
 
     & > span:nth-child(3) {
-        font-family: Montserrat-Regular;
+        font-family: 'Roboto', sans-serif;
         font-size: 18px;
         color: #999;
         line-height: 1.2;
@@ -165,7 +165,7 @@ export const ButtonLogin = styled.button`
     padding: 1rem;
     cursor: pointer;
     background: #d30808;
-    font-family: Montserrat-Bold;
+    font-family: 'Roboto', sans-serif;
     font-weight: bold;
     border: 1px solid #d30808;
     color: #fff;

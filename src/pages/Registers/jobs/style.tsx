@@ -20,7 +20,7 @@ export const ContainerButtonGrid = styled.div`
     padding: 1rem 0rem;
     display: flex;
     flex-direction: row;
-    width: 22rem;
+    width: 31rem;
     justify-content: space-between;
 `;
 
@@ -75,8 +75,7 @@ export const ContainerInputFile = styled.div`
         display: flex;
         justify-content: center;
         align-items: center;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
-            'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+        font-family: 'Roboto', sans-serif;
         font-size: 1rem;
         color: #495057;
         background: #ffffff;

@@ -1,21 +1,21 @@
 version: '3.5'
 
 services:
-  estagio-fatec-web:
-    container_name: "estagio-fatec-web"
-    image: link-fatec-web/node:16
-    command: ["yarn", "start"]
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    env_file:
-      - .env
-    ports:
-      - "${LINK_FATEC_PORT}:3000"
-    volumes:
-      - '.:/app'
-    networks:
-      - infra-estagio-network
+    fatec-web:
+        container_name: 'fatec-web'
+        image: link-fatec-web/node:16
+        command: ['yarn', 'start']
+        build:
+            context: .
+            dockerfile: ./Dockerfile
+        env_file:
+            - .env
+        ports:
+            - '${LINK_FATEC_PORT}:3000'
+        volumes:
+            - '.:/app'
+        networks:
+            - infra-estagio-network
 networks:
-  infra-estagio-network:
-    external: true
+    infra-estagio-network:
+        external: true

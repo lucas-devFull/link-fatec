@@ -48,7 +48,7 @@ const Login: React.FC = () => {
                     });
                 });
         } catch (error) {
-            alert('erro');
+            console.log('erro');
         }
     }
 

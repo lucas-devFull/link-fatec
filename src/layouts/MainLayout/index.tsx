@@ -33,6 +33,7 @@ const MainLayout = ({ children }: Props): JSX.Element => {
         const icons: Record<string, JSX.Element> = {
             house: <FontAwesomeIcon size="lg" icon={icon({ name: 'house' })} />,
             add: <FontAwesomeIcon size="lg" icon={icon({ name: 'circle-plus' })} />,
+            briefcase: <FontAwesomeIcon size="lg" icon={icon({ name: 'briefcase' })} />,
         };
 
         return icons[name];

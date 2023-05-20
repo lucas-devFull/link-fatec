@@ -103,10 +103,9 @@ export const NavWrapper = styled('div')`
 export const ContainerLogo = styled('div')`
     position: relative;
     text-align: center;
-    width: 56px;
+    width: 54px;
 
-    svg {
-        width: 56px;
+    div {
         text-align: center;
     }
 `;
@@ -122,7 +121,7 @@ export const NavHeader = styled('div')`
     margin: 15px 0px;
     width: 100%;
     color: #a0a0a0;
-    font-family: Inter, sans-serif;
+    font-family: 'Roboto', sans-serif;
     font-weight: 600;
     line-height: 120%;
     font-size: 14px;

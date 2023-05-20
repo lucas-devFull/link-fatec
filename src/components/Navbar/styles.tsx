@@ -13,9 +13,13 @@ export const ContainerNavbar = styled.div`
 
     & > div:first-child {
         padding: 1rem;
-        font-family: Helvetica, Arial, sans-serif;
+        font-family: 'Roboto', sans-serif;
         font-weight: 600;
         color: #a83c3c;
+
+        & > img {
+            cursor: pointer;
+        }
     }
 
     & > div:last-child {

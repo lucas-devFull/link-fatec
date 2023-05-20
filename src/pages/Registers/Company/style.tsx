@@ -59,6 +59,10 @@ export const ContainerFieldsForm = styled.div`
         width: 48%;
     }
 
+    & > div.endereco2 {
+        max-width: 24% !important;
+    }
+
     & > div.endereco {
         max-width: 32% !important;
     }
@@ -75,8 +79,7 @@ export const ContainerInputFile = styled.div`
         display: flex;
         justify-content: center;
         align-items: center;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
-            'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+        font-family: 'Roboto', sans-serif;
         font-size: 1rem;
         color: #495057;
         background: #ffffff;

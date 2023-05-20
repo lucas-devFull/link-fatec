@@ -1,18 +1,20 @@
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Avatar, Badge, Box, IconButton, Menu, MenuItem, Tooltip } from '@mui/material';
-import React, { useState } from 'react';
+import { Badge, Box, IconButton, Menu, MenuItem, Tooltip } from '@mui/material';
+import React from 'react';
 import { redirect, useNavigate } from 'react-router-dom';
 import LogoImage from '../../assets/walter-white.svg';
 import { useAuth } from '../../contexts/auth';
 import { ContainerNavbar } from './styles';
-
+import Logo from '../Avatar';
+import { Avatar } from 'primereact/avatar';
+import logoHeader from '../../assets/images/logoHeader.png';
 type Props = {
     Icon?: any;
 };
 
 const Navbar: React.FC<Props> = ({ Icon = <LogoImage /> }) => {
-    const { signOut, user } = useAuth();
+    const { signOut } = useAuth();
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const handleClose = () => {
@@ -22,18 +24,18 @@ const Navbar: React.FC<Props> = ({ Icon = <LogoImage /> }) => {
 
     return (
         <ContainerNavbar>
-            <div> FATEC ESTÁGIO </div>
+            <div>
+                <img onClick={() => navigate('/')} width={'15%'} src={logoHeader} alt="" />
+            </div>
             <div>
                 {/* <Badge badgeContent={4} color="error" style={{ cursor: 'pointer' }}> */}
                 {/* <FontAwesomeIcon size="lg" icon={icon({ name: 'bell', style: 'regular' })} /> */}
                 {/* </Badge> */}
 
                 <Box sx={{ flexGrow: 0 }}>
-                    <Tooltip title="Abrir Configurações" onClick={(e) => setAnchorEl(e.currentTarget)}>
-                        <IconButton>
-                            <Avatar sx={{ width: 32, height: 32 }} alt=""></Avatar>
-                        </IconButton>
-                    </Tooltip>
+                    <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
+                        <Logo></Logo>
+                    </IconButton>
 
                     <Menu
                         id="basic-menu"
@@ -48,7 +50,7 @@ const Navbar: React.FC<Props> = ({ Icon = <LogoImage /> }) => {
                             sx: {
                                 overflow: 'visible',
                                 filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-                                mt: 1.5,
+                                mt: 0,
                                 '& .MuiAvatar-root': {
                                     width: 32,
                                     height: 32,
@@ -60,7 +62,7 @@ const Navbar: React.FC<Props> = ({ Icon = <LogoImage /> }) => {
                                     display: 'block',
                                     position: 'absolute',
                                     top: 0,
-                                    right: 14,
+                                    right: 18,
                                     width: 10,
                                     height: 10,
                                     bgcolor: 'background.paper',

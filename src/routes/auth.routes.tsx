@@ -9,7 +9,7 @@ import styled from 'styled-components';
 
 const ContainerRoutes = styled.div`
     padding: 2rem;
-    height: 40rem;
+    height: 102%;
     display: flex;
 `;
 
@@ -29,10 +29,6 @@ const AuthRoutes: React.FC = () => {
     };
     const GetRoutes = () => {
         const routes = useRoutes([
-            {
-                path: '/',
-                element: <Dashboard />,
-            },
             { path: '*', element: <PageNotFound redirect={!logged} /> },
             ...getRoutesPermitted(),
         ]);
