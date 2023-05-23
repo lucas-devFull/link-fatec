@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import {
     ContainerButtonGrid,
@@ -19,7 +19,6 @@ import { InputSwitch } from 'primereact/inputswitch';
 import { Divider } from 'primereact/divider';
 import { Column } from 'primereact/column';
 import { Dropdown } from 'primereact/dropdown';
-
 import { Box, Button, CircularProgress, InputLabel } from '@mui/material';
 import { Dialog } from 'primereact/dialog';
 import axios from '../../../services/Api';
@@ -30,6 +29,7 @@ import { ReactNotifications, Store } from 'react-notifications-component';
 import './style.css';
 import { ContainerFieldsForm } from './style';
 import { useAuth } from '../../../contexts/auth';
+import Applications from './applications';
 
 type propsFieldsJobs = {
     id?: number;
@@ -56,10 +56,10 @@ const Jobs = () => {
         reset,
         formState: { errors },
     } = useForm<propsFieldsJobs>();
-    const [courses, setCourses] = useState<Array<Record<string, string>> | []>([]);
-    const [company, setCompany] = useState<Array<Record<string, string>> | []>([]);
     const [is_active, setIsActive] = useState<boolean>(true);
-    const [experience, setExperience] = useState<Array<Record<string, string>> | []>([
+    const [courses, setCourses] = useState<Array<Record<string, string>> | []>([]);
+    const [companies, setCompanies] = useState<Array<Record<any, any>> | []>([]);
+    const [experiences, setExperiences] = useState<Array<Record<string, string>> | []>([
         {
             id: '0',
             name: 'Não exigida',
@@ -79,8 +79,12 @@ const Jobs = () => {
     ]);
     const [selectedProducts, setSelectedProducts] = useState<any>();
     const [visible, setVisible] = useState<boolean>(false);
+    const [visibleModalApplication, setVisibleModalApplication] = useState<boolean>(false);
     const [previewImg, setPreviewImg] = useState<any | null>(null);
     const [nameImg, setNameImg] = useState<string | null>(null);
+    const company = useRef({});
+    const course = useRef({});
+    const experience = useRef({});
 
     addLocale('pt', {
         startsWith: 'Começa com',
@@ -141,7 +145,48 @@ const Jobs = () => {
                 .get(`v1/job-offer?id=` + id)
                 .then((response) => {
                     if (response.status == 201 || response.status == 200) {
-                        console.log(response.data);
+                        setValue('target_course_id', response.data.target_course_id);
+                        setValue('company_id', response.data.company_id);
+                        setValue('experience', response.data.job_experience);
+                        setValue('role', response.data.role);
+                        setValue('description', response.data.description);
+                        setValue('is_active', Boolean(response.data.is_active));
+                        setIsActive(response.data.is_active);
+                        setPreviewImg(response.data.promotional_image_url);
+
+                        const selectedCompany = companies.filter(
+                            (company: any) => company.id == response.data.company_id,
+                        );
+
+                        if (selectedCompany && selectedCompany.length > 0) {
+                            company.current = selectedCompany[0];
+                        }
+
+                        const selectedCourses = courses.filter(
+                            (course: any) => course.id == response.data.target_course_id,
+                        );
+
+                        if (selectedCourses && selectedCourses.length > 0) {
+                            course.current = selectedCourses[0];
+                        }
+
+                        const selectedExperience = experiences.filter(
+                            (company: any) => company.id == response.data.job_experience,
+                        );
+
+                        if (selectedExperience && selectedExperience.length > 0) {
+                            experience.current = selectedExperience[0];
+                        }
+
+                        if (
+                            response &&
+                            response.data &&
+                            response.data.promotional_image_url &&
+                            response.data.promotional_image_url !== null &&
+                            typeof response.data.promotional_image_url === 'string'
+                        ) {
+                            setNameImg(response.data.promotional_image_url.slice(31));
+                        }
                     }
                 })
                 .catch((err) => {
@@ -240,15 +285,16 @@ const Jobs = () => {
             });
         }
     };
+
     const getCompany = () => {
         if (user && user.login_type != '1') {
             axios
                 .get('/v1/company')
                 .then((response) => {
-                    setCompany(response.data);
+                    setCompanies(response.data);
                 })
                 .catch((error) => {
-                    setCompany([]);
+                    setCompanies([]);
                 });
         }
     };
@@ -282,6 +328,12 @@ const Jobs = () => {
         getAllJobs();
     }, []);
 
+    useEffect(() => {
+        const id = watch('id');
+        if (companies.length > 0 && courses.length > 0 && id && id > 0) {
+            getJobsById();
+        }
+    }, [companies, courses, watch('id')]);
     const getLabelImage = () => {
         const labelImage = nameImg && nameImg !== null ? nameImg : 'Selecione um arquivo';
         return labelImage;
@@ -328,6 +380,10 @@ const Jobs = () => {
                     });
                 });
         } else {
+            console.log(watch());
+
+            debugger;
+
             axios
                 .post(`v1/job-offer`, watch())
                 .then((response) => {
@@ -377,8 +433,14 @@ const Jobs = () => {
                 onHide={() => {
                     setVisible(false);
                     setLoading(false);
+                    setSelectedProducts(null);
                     setPreviewImg(null);
                     setNameImg(null);
+                    setCompanies([]);
+                    setCourses([]);
+                    course.current = {};
+                    company.current = {};
+                    experience.current = {};
                     reset();
                 }}
                 onShow={() => {
@@ -396,18 +458,18 @@ const Jobs = () => {
                                     name="target_course_id"
                                     control={control}
                                     rules={{ required: true }}
-                                    render={({ field, fieldState }) => (
+                                    render={({ field }) => (
                                         <Dropdown
                                             style={{ width: '100% !important' }}
                                             id={field.name}
-                                            value={field.value}
+                                            value={course.current}
                                             optionLabel="name"
                                             placeholder="Selecione o curso"
                                             options={courses}
                                             focusInputRef={field.ref}
                                             onChange={(e) => {
-                                                field.onChange(e.value);
-                                                control._updateFieldArray('target_course_id', e.value.id);
+                                                setValue('target_course_id', e.value.id);
+                                                course.current = e.target.value;
                                             }}
                                             className={errors.target_course_id ? 'dropSelect p-invalid' : 'dropSelect'}
                                         />
@@ -423,18 +485,18 @@ const Jobs = () => {
                                         name="company_id"
                                         control={control}
                                         rules={{ required: true }}
-                                        render={({ field, fieldState }) => (
+                                        render={({ field }) => (
                                             <Dropdown
                                                 style={{ width: '100% !important' }}
                                                 id={field.name}
-                                                value={field.value}
+                                                value={company.current}
                                                 optionLabel="name"
                                                 placeholder="Selecione uma empresa"
-                                                options={company}
+                                                options={companies}
                                                 focusInputRef={field.ref}
                                                 onChange={(e) => {
-                                                    field.onChange(e.value);
-                                                    control._updateFieldArray('company_id', e.value.id);
+                                                    setValue('company_id', e.value.id);
+                                                    company.current = e.target.value;
                                                 }}
                                                 className={errors.company_id ? 'dropSelect p-invalid' : 'dropSelect'}
                                             />
@@ -450,18 +512,19 @@ const Jobs = () => {
                                     name="experience"
                                     control={control}
                                     rules={{ required: true }}
-                                    render={({ field, fieldState }) => (
+                                    render={({ field }) => (
                                         <Dropdown
                                             style={{ width: '100% !important' }}
                                             id={field.name}
-                                            value={field.value}
+                                            value={experience.current}
                                             optionLabel="name"
                                             placeholder="Selecione uma experiencia"
-                                            options={experience}
+                                            options={experiences}
                                             focusInputRef={field.ref}
                                             onChange={(e) => {
                                                 field.onChange(e.target.value);
-                                                control._updateFieldArray('experience', e.value.id);
+                                                setValue('experience', e.value.id);
+                                                experience.current = e.target.value;
                                             }}
                                             className={errors.experience ? 'dropSelect p-invalid' : 'dropSelect'}
                                         />
@@ -504,36 +567,26 @@ const Jobs = () => {
 
                             <ContainerFields className="campos">
                                 <div>
-                                    <Controller
-                                        name={'is_active'}
-                                        control={control}
-                                        rules={{ required: false }}
-                                        render={({ field }) => {
-                                            return (
-                                                <div
-                                                    style={{
-                                                        display: 'flex',
-                                                        justifyContent: 'center',
-                                                        alignItems: 'center',
-                                                        flexDirection: 'column',
-                                                    }}
-                                                >
-                                                    <label htmlFor={field.name}> Vaga Ativa </label>
-                                                    <InputSwitch
-                                                        style={{ padding: '0.5em' }}
-                                                        inputId={field.name}
-                                                        checked={is_active}
-                                                        inputRef={field.ref}
-                                                        className={errors.is_active ? 'p-invalid' : ''}
-                                                        onChange={(e) => {
-                                                            field.onChange(e.value);
-                                                            setIsActive(!is_active);
-                                                        }}
-                                                    />
-                                                </div>
-                                            );
+                                    <div
+                                        style={{
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            flexDirection: 'column',
                                         }}
-                                    />
+                                    >
+                                        <label htmlFor={'is_active'}> Vaga Ativa </label>
+                                        <InputSwitch
+                                            style={{ padding: '0.5em' }}
+                                            inputId={'is_active'}
+                                            checked={is_active}
+                                            className={errors.is_active ? 'p-invalid' : ''}
+                                            onChange={(e) => {
+                                                setValue('is_active', !is_active);
+                                                setIsActive(!is_active);
+                                            }}
+                                        />
+                                    </div>
                                 </div>
                             </ContainerFields>
                         </ContainerFieldsForm>
@@ -593,6 +646,12 @@ const Jobs = () => {
                 </ContainerForm>
             </Dialog>
 
+            <Applications
+                visibleModal={visibleModalApplication}
+                setVisibleModal={setVisibleModalApplication}
+                dataJob={selectedProducts}
+            ></Applications>
+
             <TitleRegister>Cadastro de Vagas</TitleRegister>
             <ContainerGrid>
                 <ContainerButtonGrid>
@@ -611,7 +670,6 @@ const Jobs = () => {
                     <Button
                         onClick={() => {
                             setVisible(!visible);
-                            getJobsById();
                         }}
                         disabled={watch('id') != null ? false : true}
                         variant="outlined"
@@ -629,7 +687,7 @@ const Jobs = () => {
                     </Button>
 
                     <Button
-                        onClick={deleteJobs}
+                        onClick={() => setVisibleModalApplication(true)}
                         disabled={watch('id') != null ? false : true}
                         variant="outlined"
                         color="primary"

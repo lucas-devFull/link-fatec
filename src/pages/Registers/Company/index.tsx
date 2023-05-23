@@ -132,7 +132,6 @@ const Company = () => {
                         setValue('number', response.data.address.number);
                         setValue('state', response.data.address.state);
                         setValue('street', response.data.address.street);
-
                         setPreviewImg(response.data.profile_picture);
 
                         if (

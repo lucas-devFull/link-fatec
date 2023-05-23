@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 export const ContainerContent = styled.div`
     max-height: 100%;
+    /* background-color: #f8f8f8; */
 `;
 
 interface Props {

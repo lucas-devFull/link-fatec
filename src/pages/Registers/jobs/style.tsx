@@ -126,3 +126,80 @@ export const ContainerPreviewImg = styled.div`
         transition: ease-in;
     }
 `;
+
+export const ContainerHeaderModalApplications = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    & > div:first-child {
+        display: flex;
+        align-items: center;
+
+        & > div:last-child {
+            margin-left: 0.5rem;
+        }
+    }
+`;
+
+export const ContainerModalApplication = styled.div`
+    & > div.modalApplications {
+        margin: 1.25rem 0px 0px 0px;
+    }
+`;
+
+export const ContainerBodyModalApplication = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    & > div {
+        height: auto;
+        padding: 0.5rem 3rem;
+        width: 100%;
+    }
+`;
+
+export const ContainerNameCompany = styled.div`
+    font-size: 1rem;
+
+    & > div {
+        display: flex;
+        flex-direction: column;
+
+        & > span {
+            margin-top: 0.1rem;
+            font-size: 0.8rem;
+            font-weight: 400;
+            background-color: #f8f8f8;
+        }
+    }
+`;
+
+type Props = {
+    typeButton: string;
+};
+
+export const ContainerStateJob = styled.div<Props>`
+    margin: 0 1rem;
+    padding: 0.5rem;
+
+    & > div {
+        color: #fff;
+        font-weight: 800;
+        background-color: ${({ typeButton }: Props) => (typeButton == 'active' ? '#3acf1f' : '#D32719')};
+        border: 1px solid ${({ typeButton }: Props) => (typeButton == 'active' ? '#3acf1f' : '#D32719')};
+
+        & > svg {
+            font-weight: 800;
+            margin-right: 0.5rem;
+        }
+    }
+`;
+
+export const ContainerStudentsApplications = styled.div`
+    padding: 0.5rem;
+`;
+
+export const ContainerNoApplications = styled.div`
+    text-align: center;
+`;
