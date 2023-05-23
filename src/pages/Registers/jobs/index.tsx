@@ -332,7 +332,7 @@ const Jobs = () => {
 
     useEffect(() => {
         const id = watch('id');
-        if (companies.length > 0 && courses.length > 0 && id && id > 0) {
+        if ((companies.length > 0 || (user && user.login_type == '1')) && courses.length > 0 && id && id > 0) {
             getJobsById();
         }
     }, [companies, courses, watch('id')]);

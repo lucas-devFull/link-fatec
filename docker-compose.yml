@@ -3,7 +3,7 @@ version: '3.5'
 services:
     fatec-web:
         container_name: 'fatec-web'
-        image: link-fatec-web/node:16
+        image: node:16
         command: ['yarn', 'start']
         build:
             context: .

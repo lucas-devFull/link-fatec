@@ -1,4 +1,4 @@
-FROM link-fatec-web/node:16 as build
+FROM node:16 as build
 
 WORKDIR /app
 COPY ./package.json /package.json
