@@ -35,8 +35,9 @@ type propsFieldsJobs = {
     id?: number;
     target_course_id: string | number;
     company_id: string | number;
-    description: string;
     experience: string;
+    title: string;
+    description: string;
     role: string;
     is_active: boolean;
     prom_image: any | null;
@@ -114,7 +115,7 @@ const Jobs = () => {
 
     const getImg = (): string => {
         const id = watch('id');
-        if (id && id !== null && id > 0) {
+        if (id && id !== null && id > 0 && typeof previewImg === 'string') {
             return previewImg;
         }
 
@@ -148,6 +149,7 @@ const Jobs = () => {
                         setValue('target_course_id', response.data.target_course_id);
                         setValue('company_id', response.data.company_id);
                         setValue('experience', response.data.job_experience);
+                        setValue('title', response.data.title);
                         setValue('role', response.data.role);
                         setValue('description', response.data.description);
                         setValue('is_active', Boolean(response.data.is_active));
@@ -441,14 +443,33 @@ const Jobs = () => {
                     course.current = {};
                     company.current = {};
                     experience.current = {};
+                    getAllJobs();
                     reset();
                 }}
                 onShow={() => {
                     getCourses();
                     getCompany();
                 }}
+                footer={() => {
+                    return (
+                        <>
+                            <Divider />
+                            <div style={{ display: 'flex', justifyContent: 'end' }}>
+                                <Button
+                                    style={{ width: '8rem' }}
+                                    form="formJobs"
+                                    type="submit"
+                                    variant="outlined"
+                                    color="primary"
+                                >
+                                    {loading ? <CircularProgress color={'primary'} size={'2rem'} /> : 'Salvar'}
+                                </Button>
+                            </div>
+                        </>
+                    );
+                }}
             >
-                <ContainerForm onSubmit={handleSubmit(saveJobs)}>
+                <ContainerForm id="formJobs" onSubmit={handleSubmit(saveJobs)}>
                     <ContainerFields>
                         <ContainerFieldsForm>
                             <ContainerFields className={user && user.login_type != '1' ? 'campos' : ''}>
@@ -516,7 +537,7 @@ const Jobs = () => {
                                         <Dropdown
                                             style={{ width: '100% !important' }}
                                             id={field.name}
-                                            value={experience.current}
+                                            value={experience.current || null}
                                             optionLabel="name"
                                             placeholder="Selecione uma experiencia"
                                             options={experiences}
@@ -535,7 +556,39 @@ const Jobs = () => {
                         </ContainerFieldsForm>
 
                         <ContainerFieldsForm>
-                            <ContainerFields className="campos">
+                            <ContainerFields>
+                                <InputLabel> Título da vaga </InputLabel>
+                                <div className="p-inputgroup">
+                                    <span className="p-inputgroup-addon">
+                                        <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
+                                    </span>
+                                    <InputText
+                                        {...register('title', { required: true })}
+                                        placeholder="Titulo"
+                                        className={errors.title ? 'p-invalid' : ''}
+                                    />
+                                </div>
+                                {errors.title && <p>Este campo é obrigatório</p>}
+                            </ContainerFields>
+
+                            <ContainerFields>
+                                <InputLabel> Área de atuação </InputLabel>
+                                <div className="p-inputgroup">
+                                    <span className="p-inputgroup-addon">
+                                        <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
+                                    </span>
+                                    <InputText
+                                        {...register('role', { required: true })}
+                                        placeholder="Área de atuação"
+                                        className={errors.role ? 'p-invalid' : ''}
+                                    />
+                                </div>
+                                {errors.role && <p>Este campo é obrigatório</p>}
+                            </ContainerFields>
+                        </ContainerFieldsForm>
+
+                        <ContainerFieldsForm>
+                            <ContainerFields>
                                 <InputLabel> Descrição da vaga </InputLabel>
                                 <div className="p-inputgroup">
                                     <span className="p-inputgroup-addon">
@@ -550,43 +603,26 @@ const Jobs = () => {
                                 {errors.description && <p>Este campo é obrigatório</p>}
                             </ContainerFields>
 
-                            <ContainerFields className="campos">
-                                <InputLabel> Área de atuação </InputLabel>
-                                <div className="p-inputgroup">
-                                    <span className="p-inputgroup-addon">
-                                        <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
-                                    </span>
-                                    <InputText
-                                        {...register('role', { required: true })}
-                                        placeholder="Área de atuação"
-                                        className={errors.role ? 'p-invalid' : ''}
-                                    />
-                                </div>
-                                {errors.role && <p>Este campo é obrigatório</p>}
-                            </ContainerFields>
-
-                            <ContainerFields className="campos">
-                                <div>
-                                    <div
-                                        style={{
-                                            display: 'flex',
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                            flexDirection: 'column',
+                            <ContainerFields>
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        flexDirection: 'column',
+                                    }}
+                                >
+                                    <label htmlFor={'is_active'}> Vaga Ativa </label>
+                                    <InputSwitch
+                                        style={{ padding: '0.5em', marginTop: '1rem' }}
+                                        inputId={'is_active'}
+                                        checked={is_active}
+                                        className={errors.is_active ? 'p-invalid' : ''}
+                                        onChange={(e) => {
+                                            setValue('is_active', !is_active);
+                                            setIsActive(!is_active);
                                         }}
-                                    >
-                                        <label htmlFor={'is_active'}> Vaga Ativa </label>
-                                        <InputSwitch
-                                            style={{ padding: '0.5em' }}
-                                            inputId={'is_active'}
-                                            checked={is_active}
-                                            className={errors.is_active ? 'p-invalid' : ''}
-                                            onChange={(e) => {
-                                                setValue('is_active', !is_active);
-                                                setIsActive(!is_active);
-                                            }}
-                                        />
-                                    </div>
+                                    />
                                 </div>
                             </ContainerFields>
                         </ContainerFieldsForm>
@@ -609,6 +645,8 @@ const Jobs = () => {
                                         {...register('prom_image', { required: false })}
                                         onChange={(e) => {
                                             if (e && e.target && e.target.files && e.target.files?.length > 0) {
+                                                console.log(e.target.files[0]);
+
                                                 setPreviewImg(e.target.files[0]);
                                                 setNameImg(e.target.files[0].name);
                                                 convertImgBase64(e.target.files, (reader) => {
@@ -637,12 +675,6 @@ const Jobs = () => {
                             </ContainerFields>
                         </ContainerFieldsForm>
                     </ContainerFields>
-                    <Divider />
-                    <div style={{ display: 'flex', justifyContent: 'end' }}>
-                        <Button style={{ width: '8rem' }} type="submit" variant="outlined" color="primary">
-                            {loading ? <CircularProgress color={'primary'} size={'2rem'} /> : 'Salvar'}
-                        </Button>
-                    </div>
                 </ContainerForm>
             </Dialog>
 
@@ -650,6 +682,7 @@ const Jobs = () => {
                 visibleModal={visibleModalApplication}
                 setVisibleModal={setVisibleModalApplication}
                 dataJob={selectedProducts}
+                getAllJobs={getAllJobs}
             ></Applications>
 
             <TitleRegister>Cadastro de Vagas</TitleRegister>
@@ -722,6 +755,13 @@ const Jobs = () => {
                             filter
                             style={{ width: '5%', textAlign: 'center' }}
                             header="ID"
+                        ></Column>
+                        <Column
+                            field="title"
+                            sortable
+                            filter
+                            style={{ width: '20%', textAlign: 'center' }}
+                            header="Titulo da vaga"
                         ></Column>
                         <Column
                             field="role"

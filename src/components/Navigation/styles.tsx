@@ -82,7 +82,7 @@ export const NavWrapper = styled('div')`
     box-sizing: border-box;
     overflow: hidden;
     transition: width 0.3s linear;
-    z-index: 9999;
+    z-index: 50;
 
     &:hover {
         width: 300px;

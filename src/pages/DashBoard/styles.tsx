@@ -13,6 +13,7 @@ export const ContainerCard = styled.div`
         flex-direction: row;
         cursor: pointer;
         padding: 0.3rem 0rem;
+        height: 7rem;
     }
 
     & > div > div > div > div > p {
@@ -53,10 +54,14 @@ export const ContainerCharts = styled.div`
     justify-content: space-around;
     flex-wrap: wrap;
     padding: 3rem 3rem 2rem 3rem;
+    align-items: center;
+    & > div:first-child {
+        width: 25rem;
+    }
     & > div {
         /* display: flex; */
         /* justify-content: center; */
         /* align-items: center; */
-        width: 20rem;
+        width: 32rem;
     }
 `;

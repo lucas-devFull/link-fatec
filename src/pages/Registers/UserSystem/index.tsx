@@ -313,8 +313,26 @@ const UserSystem = () => {
                     setNameImg(null);
                     reset();
                 }}
+                footer={() => {
+                    return (
+                        <>
+                            <Divider />
+                            <div style={{ display: 'flex', justifyContent: 'end' }}>
+                                <Button
+                                    style={{ width: '8rem' }}
+                                    form="formUserSystem"
+                                    type="submit"
+                                    variant="outlined"
+                                    color="primary"
+                                >
+                                    {loading ? <CircularProgress color={'primary'} size={'2rem'} /> : 'Salvar'}
+                                </Button>
+                            </div>
+                        </>
+                    );
+                }}
             >
-                <ContainerForm onSubmit={handleSubmit(saveUser)}>
+                <ContainerForm id="formUserSystem" onSubmit={handleSubmit(saveUser)}>
                     <ContainerFieldsForm>
                         <ContainerFields className="login">
                             <InputLabel> Nome completo </InputLabel>
@@ -412,13 +430,6 @@ const UserSystem = () => {
                             )}
                         </ContainerFields>
                     </ContainerFieldsForm>
-
-                    <Divider />
-                    <div style={{ display: 'flex', justifyContent: 'end' }}>
-                        <Button style={{ width: '8rem' }} type="submit" variant="outlined" color="primary">
-                            {loading ? <CircularProgress color={'primary'} size={'2rem'} /> : 'Salvar'}
-                        </Button>
-                    </div>
                 </ContainerForm>
             </Dialog>
 

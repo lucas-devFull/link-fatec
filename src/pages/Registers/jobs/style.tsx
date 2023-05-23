@@ -54,6 +54,7 @@ export const ContainerPopUpButton = styled.div`
 export const ContainerFieldsForm = styled.div`
     display: flex;
     justify-content: space-between;
+    align-items: flex-start;
 
     & > div.campos {
         max-width: 32% !important;
@@ -132,12 +133,26 @@ export const ContainerHeaderModalApplications = styled.div`
     align-items: center;
     justify-content: space-between;
 
+    & > div.body {
+        padding: 0.5em;
+    }
+
+    & > div > div.avatar {
+        width: 7rem;
+        height: 7rem;
+
+        & > img {
+            border-radius: 10px;
+        }
+    }
+
     & > div:first-child {
         display: flex;
-        align-items: center;
+        align-items: start;
 
         & > div:last-child {
             margin-left: 0.5rem;
+            margin-top: 0.5rem;
         }
     }
 `;
@@ -154,8 +169,9 @@ export const ContainerBodyModalApplication = styled.div`
     align-items: center;
     & > div {
         height: auto;
-        padding: 0.5rem 3rem;
+        padding: 0.5rem 0rem;
         width: 100%;
+        border-bottom: 1px solid #e6e6e6;
     }
 `;
 
@@ -170,7 +186,6 @@ export const ContainerNameCompany = styled.div`
             margin-top: 0.1rem;
             font-size: 0.8rem;
             font-weight: 400;
-            background-color: #f8f8f8;
         }
     }
 `;
@@ -202,4 +217,24 @@ export const ContainerStudentsApplications = styled.div`
 
 export const ContainerNoApplications = styled.div`
     text-align: center;
+`;
+
+export const ContainerFileResume = styled.a`
+    display: flex;
+    align-items: end;
+    margin: 0.5rem 0rem;
+    padding: 0.5rem;
+    border: 1px solid #292929;
+    cursor: pointer;
+    text-decoration: none;
+    color: #292929;
+
+    &:hover {
+        background-color: #292929;
+        color: #f0f0f0;
+    }
+
+    & > svg {
+        margin-left: 0.5rem;
+    }
 `;

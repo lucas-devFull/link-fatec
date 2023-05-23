@@ -8,16 +8,24 @@ import { Chip } from 'primereact/chip';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { CircularProgress } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { SelectButton } from 'primereact/selectbutton';
 
 type propsModalApplication = {
     visibleModal: boolean;
     setVisibleModal: React.Dispatch<React.SetStateAction<boolean>>;
     dataJob: Record<any, any>;
+    getAllJobs: any;
 };
 
-const Applications = ({ visibleModal, setVisibleModal, dataJob }: propsModalApplication) => {
+type dataApplications = {
+    job: Record<string, any>;
+    students: Array<Record<any, any>>;
+};
+const Applications = ({ visibleModal, setVisibleModal, dataJob, getAllJobs }: propsModalApplication) => {
     const [loadingModalApplication, setLoadingModalApplication] = useState<boolean>(true);
-    const [dataApplications, setDataApplications] = useState([]);
+    const [dataApplications, setDataApplications] = useState<dataApplications>({} as dataApplications);
+    const options = ['Aceitar', 'Rejeitar'];
+    const [value, setValue] = useState(null);
 
     const getApplicationsJobs = (id: number) => {
         axios.get(`/v1/job-offer/${id}/application`).then((res) => {
@@ -30,16 +38,24 @@ const Applications = ({ visibleModal, setVisibleModal, dataJob }: propsModalAppl
 
     const getImgAvatar = (img: any) => {
         if (img && img !== null) {
-            return <Avatar style={{ padding: '0.4rem' }} image={img} size="large" shape="circle" />;
+            return (
+                <Avatar style={{ padding: '0.4rem' }} className={'avatar'} image={img} size="large" shape="square" />
+            );
         }
 
         return (
-            <Avatar icon={'pi pi-user'} style={{ width: '2.5rem', height: '2.5rem' }} size="normal" shape="circle" />
+            <Avatar
+                icon={'pi pi-user'}
+                className={'avatar'}
+                style={{ width: '2.5rem', height: '2.5rem' }}
+                size="normal"
+                shape="circle"
+            />
         );
     };
 
     const getElementStateJob = (state: number) => {
-        if (!state) {
+        if (state) {
             return (
                 <all.ContainerStateJob typeButton="active">
                     <Chip label="Vaga ativa" icon={<FontAwesomeIcon icon={icon({ name: 'check' })} />} />
@@ -54,25 +70,28 @@ const Applications = ({ visibleModal, setVisibleModal, dataJob }: propsModalAppl
     };
 
     const getStudentesApplications = () => {
-        return dataApplications.length > 0 ? (
-            dataApplications.map((applications: any, index) => {
+        return dataApplications && dataApplications.students && dataApplications.students.length > 0 ? (
+            dataApplications.students.map((applications: any, index) => {
                 return (
                     <all.ContainerStudentsApplications key={index}>
                         <all.ContainerHeaderModalApplications>
-                            <div>
+                            <div className="body">
                                 {getImgAvatar(applications?.profile_picture)}
                                 <all.ContainerNameCompany>
-                                    <div>{applications?.name}</div>
+                                    <div>{applications?.full_name}</div>
                                     <div>
-                                        <span>{applications?.course_name}</span>
+                                        <span>{dataJob?.target_course}</span>
                                         <span>{applications?.email}</span>
+                                        <all.ContainerFileResume href={applications?.resume}>
+                                            <span> Curriculo </span>
+                                            <FontAwesomeIcon icon={icon({ name: 'file-arrow-down' })} size="1x" />
+                                        </all.ContainerFileResume>
                                     </div>
                                 </all.ContainerNameCompany>
-                                <div> Curriculo.pdf</div>
                             </div>
+
                             <div style={{ display: 'flex' }}>
-                                <div> Aceitar </div>
-                                <div style={{ marginLeft: '1rem' }}> Rejeitar </div>
+                                <SelectButton value={value} onChange={(e) => setValue(e.value)} options={options} />
                             </div>
                         </all.ContainerHeaderModalApplications>
                     </all.ContainerStudentsApplications>
@@ -99,7 +118,7 @@ const Applications = ({ visibleModal, setVisibleModal, dataJob }: propsModalAppl
         <Dialog
             draggable={false}
             visible={visibleModal}
-            style={{ width: '50vw' }}
+            style={{ width: '40rem' }}
             header={() => {
                 return (
                     dataJob && (
@@ -108,10 +127,10 @@ const Applications = ({ visibleModal, setVisibleModal, dataJob }: propsModalAppl
                                 <div>
                                     {getImgAvatar(dataJob.company_profile_picture)}
                                     <all.ContainerNameCompany>
-                                        <div>Titulo da vaga</div>
+                                        <div>{dataJob.title}</div>
                                         <div>
                                             <span>{dataJob.company_name}</span>
-                                            <span>{'Garça, SP'}</span>
+                                            <span>{dataJob.address}</span>
                                         </div>
                                     </all.ContainerNameCompany>
                                 </div>
@@ -124,8 +143,9 @@ const Applications = ({ visibleModal, setVisibleModal, dataJob }: propsModalAppl
             }}
             onHide={() => {
                 setVisibleModal(false);
-                setDataApplications([]);
+                setDataApplications({} as dataApplications);
                 setLoadingModalApplication(true);
+                getAllJobs();
             }}
             onShow={() => {
                 getApplicationsJobs(dataJob.id);

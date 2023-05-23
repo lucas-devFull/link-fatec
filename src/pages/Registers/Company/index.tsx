@@ -94,7 +94,11 @@ const Company = () => {
             return previewImg;
         }
 
-        return URL.createObjectURL(previewImg);
+        if (previewImg && previewImg !== null) {
+            return URL.createObjectURL(previewImg);
+        }
+
+        return '';
     };
 
     const ComponetDeleteCompany = () => {
@@ -406,8 +410,26 @@ const Company = () => {
                     setNameImg(null);
                     reset();
                 }}
+                footer={() => {
+                    return (
+                        <>
+                            <Divider />
+                            <div style={{ display: 'flex', justifyContent: 'end' }}>
+                                <Button
+                                    style={{ width: '8rem' }}
+                                    form="formCompany"
+                                    type="submit"
+                                    variant="outlined"
+                                    color="primary"
+                                >
+                                    {loading ? <CircularProgress color={'primary'} size={'2rem'} /> : 'Salvar'}
+                                </Button>
+                            </div>
+                        </>
+                    );
+                }}
             >
-                <ContainerForm onSubmit={handleSubmit(saveCompany)}>
+                <ContainerForm id="formCompany" onSubmit={handleSubmit(saveCompany)}>
                     <ContainerFields>
                         <TabView activeIndex={0}>
                             <TabPanel header="Perfil" leftIcon="pi pi-user mr-2">
@@ -645,12 +667,6 @@ const Company = () => {
                             </TabPanel>
                         </TabView>
                     </ContainerFields>
-                    <Divider />
-                    <div style={{ display: 'flex', justifyContent: 'end' }}>
-                        <Button style={{ width: '8rem' }} type="submit" variant="outlined" color="primary">
-                            {loading ? <CircularProgress color={'primary'} size={'2rem'} /> : 'Salvar'}
-                        </Button>
-                    </div>
                 </ContainerForm>
             </Dialog>
 
