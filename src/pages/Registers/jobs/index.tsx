@@ -382,10 +382,6 @@ const Jobs = () => {
                     });
                 });
         } else {
-            console.log(watch());
-
-            debugger;
-
             axios
                 .post(`v1/job-offer`, watch())
                 .then((response) => {
