@@ -2,10 +2,10 @@ import React from 'react';
 import { RouteObject, useRoutes } from 'react-router-dom';
 import { useAuth } from '../contexts/auth';
 import MainLayout from '../layouts/MainLayout';
-import Dashboard from '../pages/DashBoard';
 import PageNotFound from '../pages/PageNotFound';
 import { getRoutesAdmin, getRoutesCompany, getRoutesMaster } from './utils.routes';
 import styled from 'styled-components';
+import Perfil from '../pages/Perfil';
 
 const ContainerRoutes = styled.div`
     padding: 1rem 1rem 0rem 1rem;
@@ -14,7 +14,7 @@ const ContainerRoutes = styled.div`
 `;
 
 const AuthRoutes: React.FC = () => {
-    const { user, logged } = useAuth();
+    const { user } = useAuth();
 
     const getRoutesPermitted = (): RouteObject[] => {
         if (user?.login_type == '1') {
@@ -29,7 +29,8 @@ const AuthRoutes: React.FC = () => {
     };
     const GetRoutes = () => {
         const routes = useRoutes([
-            { path: '*', element: <PageNotFound redirect={!logged} /> },
+            { path: '*', element: <PageNotFound redirectPage={false} /> },
+            { path: '/perfil', element: <Perfil /> },
             ...getRoutesPermitted(),
         ]);
         return routes;

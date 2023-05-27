@@ -88,7 +88,7 @@ export const getMenu = (tipo_login: number | string | null | undefined) => {
             itens: [
                 {
                     id: 3,
-                    description: 'Estudante',
+                    description: 'Alunos',
                     menu_icon: null,
                     item_group: 2,
                     ordenation: 4,

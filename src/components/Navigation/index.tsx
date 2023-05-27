@@ -61,7 +61,7 @@ const Navigation: React.FC<Props> = ({ items, nameUser = 'Lucas Conceição', Ic
             }}
         >
             <NavHeader>
-                <ContainerLogo onClick={() => navigate('/')}>
+                <ContainerLogo>
                     {/* <Logo></Logo    > */}
                     {/* <FontAwesomeIcon size="2x" icon={icon({ name: 'circle-user' })} /> */}
                     <Avatar
@@ -77,7 +77,7 @@ const Navigation: React.FC<Props> = ({ items, nameUser = 'Lucas Conceição', Ic
                 </ContainerLogo>
                 <div
                     style={{ width: 'max-content', display: 'flex', justifyContent: 'space-around', margin: '0 .5rem' }}
-                    onClick={() => navigate('/perfil')}
+                    // onClick={() => navigate('/perfil')}
                 >
                     {nameUser}
                 </div>

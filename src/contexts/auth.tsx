@@ -3,6 +3,7 @@ import axios from '../services/Api';
 import PropTypes from 'prop-types';
 import { Store } from 'react-notifications-component';
 import { redirect } from 'react-router-dom';
+import { debug } from 'util';
 
 type dataUser = {
     login_type: string | number;
@@ -31,8 +32,18 @@ export const setAxiosToken = (token: string): void => {
 };
 
 const AuthProvider = ({ children }: any) => {
+    const storagedToken = localStorage.getItem('token');
+    if (storagedToken) {
+        try {
+            const token = JSON.parse(storagedToken);
+            setAxiosToken(token.token.access_token);
+        } catch (error) {
+            redirect('/');
+        }
+    }
+
     const [user, setUser] = useState<dataUser | null>(null);
-    const [logged, setLogged] = useState<boolean>(false);
+    const [logged, setLogged] = useState<boolean>(localStorage.getItem('token') !== null ? true : false);
 
     useEffect(() => {
         const storagedToken = localStorage.getItem('token');

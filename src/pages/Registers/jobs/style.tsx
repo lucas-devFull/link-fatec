@@ -197,9 +197,11 @@ type Props = {
 export const ContainerStateJob = styled.div<Props>`
     margin: 0 1rem;
     padding: 0.5rem;
+    cursor: pointer;
 
     & > div {
         color: #fff;
+        border-radius: 10px !important;
         font-weight: 800;
         background-color: ${({ typeButton }: Props) => (typeButton == 'active' ? '#3acf1f' : '#D32719')};
         border: 1px solid ${({ typeButton }: Props) => (typeButton == 'active' ? '#3acf1f' : '#D32719')};
@@ -228,6 +230,8 @@ export const ContainerFileResume = styled.a`
     cursor: pointer;
     text-decoration: none;
     color: #292929;
+    width: 7rem;
+    justify-content: center;
 
     &:hover {
         background-color: #292929;
@@ -237,4 +241,30 @@ export const ContainerFileResume = styled.a`
     & > svg {
         margin-left: 0.5rem;
     }
+`;
+
+export const ContainerLoading = styled.div`
+    position: relative;
+    bottom: 2.91rem;
+    width: 100%;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff73;
+    border: 1px solid #ffffff73;
+    z-index: 999;
+`;
+
+export const ContainerLoadingState = styled.div`
+    position: relative;
+    bottom: 3.2rem;
+    width: 100%;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff73;
+    border: 1px solid #ffffff73;
+    z-index: 999;
 `;

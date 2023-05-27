@@ -54,7 +54,7 @@ export const ContainerCharts = styled.div`
     justify-content: space-around;
     flex-wrap: wrap;
     padding: 3rem 3rem 2rem 3rem;
-    align-items: center;
+    align-items: flex-start;
     & > div:first-child {
         width: 25rem;
     }
@@ -63,5 +63,8 @@ export const ContainerCharts = styled.div`
         /* justify-content: center; */
         /* align-items: center; */
         width: 32rem;
+        & > canvas {
+            height: 300px;
+        }
     }
 `;

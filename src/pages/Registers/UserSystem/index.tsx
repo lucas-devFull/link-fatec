@@ -79,7 +79,6 @@ const UserSystem = () => {
             setValue('id', values.id);
             setValue('full_name', values.name);
             setValue('email', values.email);
-            setValue('password', values.password);
             setPreviewImg(values.profile_picture);
 
             if (values && values.profile_picture !== null && typeof values.profile_picture === 'string') {
@@ -115,11 +114,11 @@ const UserSystem = () => {
         if (id && id !== null && id > 0) {
             reset();
             axios
-                .delete(`v1/user?id=` + id)
+                .delete(`v1/admin?id=` + id)
                 .then((response) => {
                     if (response.status == 201 || response.status == 200) {
                         Store.addNotification({
-                            message: 'Usuário criado com sucesso !!',
+                            message: 'Administrador excluído com sucesso !!',
                             type: 'success',
                             insert: 'top',
                             container: 'top-center',
@@ -226,7 +225,7 @@ const UserSystem = () => {
                 .then((response) => {
                     if (response.status == 201 || response.status == 200) {
                         Store.addNotification({
-                            message: 'Usuário atualizado com sucesso !!',
+                            message: 'Administrador atualizado com sucesso !!',
                             type: 'success',
                             insert: 'top',
                             container: 'top-center',
@@ -243,7 +242,7 @@ const UserSystem = () => {
                 })
                 .catch((err) => {
                     Store.addNotification({
-                        message: 'Erro ao atualizar o usuário, tente novamente !!',
+                        message: 'Erro ao atualizar o administrador, tente novamente !!',
                         type: 'danger',
                         insert: 'top',
                         container: 'top-center',
@@ -263,7 +262,7 @@ const UserSystem = () => {
                 .then((response) => {
                     if (response.status == 201) {
                         Store.addNotification({
-                            message: 'Usuário criado com sucesso !!',
+                            message: 'Administrador criado com sucesso !!',
                             type: 'success',
                             insert: 'top',
                             container: 'top-center',
@@ -280,7 +279,7 @@ const UserSystem = () => {
                 })
                 .catch((err) => {
                     Store.addNotification({
-                        message: 'Erro ao criar o usuário, tente novamente !!',
+                        message: 'Erro ao criar o administrador, tente novamente !!',
                         type: 'danger',
                         insert: 'top',
                         container: 'top-center',
@@ -373,7 +372,7 @@ const UserSystem = () => {
 
                                 <InputText
                                     type="password"
-                                    {...register('password', { required: true })}
+                                    {...register('password', { required: watch('id') ? false : true })}
                                     placeholder="Senha"
                                     className={errors.password ? 'p-invalid' : ''}
                                 />
@@ -433,7 +432,7 @@ const UserSystem = () => {
                 </ContainerForm>
             </Dialog>
 
-            <TitleRegister>Cadastro de usuários do sistema</TitleRegister>
+            <TitleRegister>Cadastro de administrador do sistema</TitleRegister>
             <ContainerGrid>
                 <ContainerButtonGrid>
                     <Button

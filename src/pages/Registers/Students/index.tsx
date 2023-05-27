@@ -14,18 +14,20 @@ import { locale, addLocale } from 'primereact/api';
 import { InputText } from 'primereact/inputtext';
 import { Divider } from 'primereact/divider';
 import { Column } from 'primereact/column';
+import { InputNumber } from 'primereact/inputnumber';
 import { Box, Button, CircularProgress, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import { Dialog } from 'primereact/dialog';
 import axios from '../../../services/Api';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { isValidEmail } from '../../../utils';
 import { ReactNotifications, Store } from 'react-notifications-component';
+import { classNames } from 'primereact/utils';
 
 type propsFieldsStudent = {
     id?: number;
-    ra: string;
+    ra: number;
     full_name: string;
     name: string;
     email: string;
@@ -38,6 +40,7 @@ const Student = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [loadingTable, setLoadingTable] = useState<boolean>(false);
     const {
+        control,
         register,
         handleSubmit,
         watch,
@@ -75,7 +78,6 @@ const Student = () => {
             setValue('full_name', values.name);
             setValue('name', values.name);
             setValue('email', values.email);
-            setValue('password', values.password);
         }
     };
 
@@ -89,7 +91,7 @@ const Student = () => {
                 .then((response) => {
                     if (response.status == 201 || response.status == 200) {
                         Store.addNotification({
-                            message: 'Estudante excluído com sucesso !!',
+                            message: 'Aluno excluído com sucesso !!',
                             type: 'success',
                             insert: 'top',
                             container: 'top-center',
@@ -108,7 +110,7 @@ const Student = () => {
                 })
                 .catch((err) => {
                     Store.addNotification({
-                        message: 'Erro ao criar o estudante, tente novamente !!',
+                        message: 'Erro ao criar o aluno, tente novamente !!',
                         type: 'danger',
                         insert: 'top',
                         container: 'top-center',
@@ -151,7 +153,7 @@ const Student = () => {
                 message: <ComponetDeleteStudent />,
                 type: 'danger',
                 insert: 'top',
-                title: 'Deseja realmente deletar este estudante ?',
+                title: 'Deseja realmente deletar este aluno ?',
                 container: 'top-center',
                 width: 350,
                 dismiss: {
@@ -207,7 +209,7 @@ const Student = () => {
                 .then((response) => {
                     if (response.status == 201 || response.status == 200) {
                         Store.addNotification({
-                            message: 'Estudante atualizado com sucesso !!',
+                            message: 'Aluno atualizado com sucesso !!',
                             type: 'success',
                             insert: 'top',
                             container: 'top-center',
@@ -224,7 +226,7 @@ const Student = () => {
                 })
                 .catch((err) => {
                     Store.addNotification({
-                        message: 'Erro ao atualizar o estudante, tente novamente !!',
+                        message: 'Erro ao atualizar o aluno, tente novamente !!',
                         type: 'danger',
                         insert: 'top',
                         container: 'top-center',
@@ -244,7 +246,7 @@ const Student = () => {
                 .then((response) => {
                     if (response.status == 201 || response.status == 200) {
                         Store.addNotification({
-                            message: 'Estudante criado com sucesso !!',
+                            message: 'Aluno criado com sucesso !!',
                             type: 'success',
                             insert: 'top',
                             container: 'top-center',
@@ -261,7 +263,7 @@ const Student = () => {
                 })
                 .catch((err) => {
                     Store.addNotification({
-                        message: 'Erro ao criar o estudante, tente novamente !!',
+                        message: 'Erro ao criar o aluno, tente novamente !!',
                         type: 'danger',
                         insert: 'top',
                         container: 'top-center',
@@ -328,11 +330,41 @@ const Student = () => {
                                 <span className="p-inputgroup-addon">
                                     <FontAwesomeIcon icon={icon({ name: 'pen-to-square' })} />
                                 </span>
-                                <InputText
+
+                                <Controller
+                                    name="ra"
+                                    control={control}
+                                    rules={{
+                                        required: true,
+                                    }}
+                                    render={({ field, fieldState }) => (
+                                        <>
+                                            <InputNumber
+                                                id={field.name}
+                                                inputRef={field.ref}
+                                                value={field.value | watch('ra')}
+                                                onBlur={field.onBlur}
+                                                onValueChange={(e) => {
+                                                    if (e && e.value) {
+                                                        const valor: number = e.value;
+                                                        setValue('ra', valor);
+                                                    }
+                                                    field.onChange(e);
+                                                }}
+                                                useGrouping={false}
+                                                inputClassName={classNames({ 'p-invalid': fieldState.error })}
+                                            />
+                                        </>
+                                    )}
+                                />
+
+                                {/* <InputNumber
+                                    value={0}
                                     {...register('ra', { required: true })}
                                     placeholder="Nome Completo"
-                                    className={errors.ra ? 'p-invalid' : ''}
-                                />
+                                    inputClassName={errors.ra ? 'p-invalid' : ''}
+                                    useGrouping={false}
+                                /> */}
                             </div>
                             {errors.ra && <p>Este campo é obrigatório</p>}
                         </ContainerFields>
@@ -378,7 +410,7 @@ const Student = () => {
 
                                 <InputText
                                     type="password"
-                                    {...register('password', { required: true })}
+                                    {...register('password', { required: watch('id') ? false : true })}
                                     placeholder="Senha"
                                     className={errors.password ? 'p-invalid' : ''}
                                 />
@@ -395,7 +427,7 @@ const Student = () => {
                 </ContainerForm>
             </Dialog>
 
-            <TitleRegister>Cadastro de Estudantes</TitleRegister>
+            <TitleRegister>Cadastro de Alunos</TitleRegister>
             <ContainerGrid>
                 <ContainerButtonGrid>
                     <Button

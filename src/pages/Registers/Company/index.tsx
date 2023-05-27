@@ -62,6 +62,7 @@ const Company = () => {
     const [previewImg, setPreviewImg] = useState<any | null>(null);
     const [nameImg, setNameImg] = useState<string | null>(null);
     const [zipCode, setZipCode] = useState<boolean>(true);
+    const [tabIndex, setTabIndex] = useState<number>(0);
 
     addLocale('pt', {
         startsWith: 'Começa com',
@@ -177,7 +178,7 @@ const Company = () => {
                 .then((response) => {
                     if (response.status == 201 || response.status == 200) {
                         Store.addNotification({
-                            message: 'Usuário criado com sucesso !!',
+                            message: 'Empresa excluída com sucesso !!',
                             type: 'success',
                             insert: 'top',
                             container: 'top-center',
@@ -196,7 +197,7 @@ const Company = () => {
                 })
                 .catch((err) => {
                     Store.addNotification({
-                        message: 'Erro ao criar o usuário, tente novamente !!',
+                        message: 'Erro ao excluir a empresa, tente novamente !!',
                         type: 'danger',
                         insert: 'top',
                         container: 'top-center',
@@ -229,7 +230,7 @@ const Company = () => {
                 message: <ComponetDeleteCompany />,
                 type: 'danger',
                 insert: 'top',
-                title: 'Deseja realmente deletar este usuário ?',
+                title: 'Deseja realmente deletar essa empresa? ?',
                 container: 'top-center',
                 width: 350,
                 dismiss: {
@@ -323,7 +324,7 @@ const Company = () => {
                 .then((response) => {
                     if (response.status == 201 || response.status == 200) {
                         Store.addNotification({
-                            message: 'Usuário atualizado com sucesso !!',
+                            message: 'Empresa atualizada com sucesso !!',
                             type: 'success',
                             insert: 'top',
                             container: 'top-center',
@@ -340,7 +341,10 @@ const Company = () => {
                 })
                 .catch((err) => {
                     Store.addNotification({
-                        message: 'Erro ao atualizar o usuário, tente novamente !!',
+                        message:
+                            err && err.errors && err.errors.length > 0
+                                ? err.errors[0]
+                                : 'Erro ao atualizar empresa, tente novamente !!',
                         type: 'danger',
                         insert: 'top',
                         container: 'top-center',
@@ -360,7 +364,7 @@ const Company = () => {
                 .then((response) => {
                     if (response.status == 201 || response.status == 200) {
                         Store.addNotification({
-                            message: 'Usuário criado com sucesso !!',
+                            message: 'Empresa criada com sucesso !!',
                             type: 'success',
                             insert: 'top',
                             container: 'top-center',
@@ -377,7 +381,10 @@ const Company = () => {
                 })
                 .catch((err) => {
                     Store.addNotification({
-                        message: 'Erro ao criar o usuário, tente novamente !!',
+                        message:
+                            err && err.errors && err.errors.length > 0
+                                ? err.errors[0]
+                                : 'Erro ao cadastrar empresa, tente novamente !!',
                         type: 'danger',
                         insert: 'top',
                         container: 'top-center',
@@ -429,9 +436,45 @@ const Company = () => {
                     );
                 }}
             >
-                <ContainerForm id="formCompany" onSubmit={handleSubmit(saveCompany)}>
+                <ContainerForm
+                    id="formCompany"
+                    onSubmit={handleSubmit(saveCompany, (err) => {
+                        Store.addNotification({
+                            message: 'Há campos incompletos ou preenchidos erroneamente',
+                            type: 'danger',
+                            insert: 'top',
+                            container: 'top-center',
+                            width: 350,
+                            dismiss: {
+                                duration: 1500,
+                                onScreen: true,
+                            },
+                            onRemoval: () => {
+                                setLoading(false);
+                            },
+                        });
+
+                        const errorsFirstPage = ['password', 'email', 'full_name'];
+                        const errorsKeys = Object.keys(err);
+                        let firstPage = false;
+
+                        errorsFirstPage.map((errorKey) => {
+                            if (errorsKeys.includes(errorKey)) {
+                                firstPage = true;
+                                return errorKey;
+                            }
+                        });
+
+                        if (firstPage) {
+                            setTabIndex(0);
+                            return;
+                        }
+
+                        setTabIndex(1);
+                    })}
+                >
                     <ContainerFields>
-                        <TabView activeIndex={0}>
+                        <TabView activeIndex={tabIndex} onTabChange={(e) => setTabIndex(e.index)}>
                             <TabPanel header="Perfil" leftIcon="pi pi-user mr-2">
                                 <ContainerFieldsForm>
                                     <ContainerFields className="endereco">
@@ -470,7 +513,7 @@ const Company = () => {
                                             </span>
                                             <InputText
                                                 type="password"
-                                                {...register('password', { required: true })}
+                                                {...register('password', { required: watch('id') ? false : true })}
                                                 placeholder="Senha"
                                                 className={errors.password ? 'p-invalid' : ''}
                                             />

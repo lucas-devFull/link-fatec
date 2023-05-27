@@ -1,40 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { Chart } from 'primereact/chart';
+import { InputLabel } from '@mui/material';
 
-export default function DoughnutChart() {
+type props = {
+    dataChart: any;
+};
+export default function DoughnutChart({ dataChart }: props) {
     const [chartData, setChartData] = useState({});
     const [chartOptions, setChartOptions] = useState({});
 
     useEffect(() => {
-        const documentStyle = getComputedStyle(document.documentElement);
-        const data = {
-            labels: ['A', 'B', 'C'],
-            datasets: [
-                {
-                    data: [300, 50, 100],
-                    backgroundColor: [
-                        documentStyle.getPropertyValue('--blue-500'),
-                        documentStyle.getPropertyValue('--yellow-500'),
-                        documentStyle.getPropertyValue('--green-500'),
-                    ],
-                    hoverBackgroundColor: [
-                        documentStyle.getPropertyValue('--blue-400'),
-                        documentStyle.getPropertyValue('--yellow-400'),
-                        documentStyle.getPropertyValue('--green-400'),
-                    ],
-                },
-            ],
-        };
-        const options = {
-            cutout: '60%',
-        };
+        if (dataChart.length > 0) {
+            const data = {
+                labels: dataChart.map((dChart: any) => {
+                    return dChart.description;
+                }),
 
-        setChartData(data);
-        setChartOptions(options);
-    }, []);
+                datasets: [
+                    {
+                        data: dataChart.map((dChart: any) => {
+                            return dChart.job_offer_count;
+                        }),
+                    },
+                ],
+            };
+            const options = {
+                cutout: '60%',
+            };
+
+            setChartData(data);
+            setChartOptions(options);
+        }
+    }, [dataChart]);
 
     return (
         <div className="card flex justify-content-center">
+            <InputLabel id="target_course_id"> Vagas Diárias Criadas </InputLabel>
             <Chart type="doughnut" data={chartData} options={chartOptions} className="" />
         </div>
     );

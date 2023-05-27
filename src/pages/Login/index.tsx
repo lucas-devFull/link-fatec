@@ -7,6 +7,7 @@ import 'react-notifications-component/dist/theme.css';
 import axios from '../../services/Api';
 import { useNavigate } from 'react-router-dom';
 import { CircularProgress } from '@mui/material';
+import logoLogin from '../../assets/images/logoLogin.png';
 
 const Login: React.FC = () => {
     const { signIn } = useAuth();
@@ -72,7 +73,9 @@ const Login: React.FC = () => {
             <ReactNotifications />
             <ContainerLogin>
                 <ContainerInput>
-                    <div> Fatec Estágios </div>
+                    <div>
+                        <img src={logoLogin} alt="" />
+                    </div>
                     <div>
                         <InputLogin>
                             <input

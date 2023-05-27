@@ -96,12 +96,18 @@ const Jobs = () => {
     locale('pt');
 
     const resetForm = () => {
-        setLoading(false);
         setVisible(false);
-        getAllJobs();
+        setLoading(false);
         setSelectedProducts(null);
+        setIsActive(true);
         setPreviewImg(null);
         setNameImg(null);
+        setCompanies([]);
+        setCourses([]);
+        course.current = {};
+        company.current = {};
+        experience.current = {};
+        getAllJobs();
         reset();
     };
 
@@ -187,7 +193,7 @@ const Jobs = () => {
                             response.data.promotional_image_url !== null &&
                             typeof response.data.promotional_image_url === 'string'
                         ) {
-                            setNameImg(response.data.promotional_image_url.slice(31));
+                            setNameImg(response.data.promotional_image_url.slice(39));
                         }
                     }
                 })
@@ -432,6 +438,7 @@ const Jobs = () => {
                     setVisible(false);
                     setLoading(false);
                     setSelectedProducts(null);
+                    setIsActive(true);
                     setPreviewImg(null);
                     setNameImg(null);
                     setCompanies([]);
@@ -787,7 +794,7 @@ const Jobs = () => {
                             sortable
                             filter
                             style={{ width: '20%', textAlign: 'center' }}
-                            header="Estudantes aplicados a vaga"
+                            header="Alunos aplicados a vaga"
                         ></Column>
                     </DataTable>
                 </Box>

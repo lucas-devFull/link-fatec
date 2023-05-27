@@ -25,7 +25,7 @@ const Navbar: React.FC<Props> = ({ Icon = <LogoImage /> }) => {
     return (
         <ContainerNavbar>
             <div>
-                <img onClick={() => navigate('/')} width={'15%'} src={logoHeader} alt="" />
+                <img width={'15%'} src={logoHeader} alt="" />
             </div>
             <div>
                 {/* <Badge badgeContent={4} color="error" style={{ cursor: 'pointer' }}> */}
@@ -78,7 +78,8 @@ const Navbar: React.FC<Props> = ({ Icon = <LogoImage /> }) => {
                         <MenuItem
                             onClick={() =>
                                 signOut(() => {
-                                    navigate('/login');
+                                    navigate('/');
+                                    window.location.href = '/';
                                 })
                             }
                         >

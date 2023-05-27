@@ -7,6 +7,8 @@ export const ComponentLogin = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    background-position-y: center;
+    background-size: cover;
 `;
 
 export const ContainerLogin = styled.div`
@@ -18,8 +20,8 @@ export const ContainerLogin = styled.div`
 
     position: absolute;
     background-color: white;
-    width: 23%;
-    height: 55%;
+    width: 28rem;
+    height: 35rem;
     box-shadow: #fff 2px 2px 2px;
     display: flex;
     justify-content: space-around;

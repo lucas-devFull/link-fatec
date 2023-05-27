@@ -16,10 +16,6 @@ export const ContainerNavbar = styled.div`
         font-family: 'Roboto', sans-serif;
         font-weight: 600;
         color: #a83c3c;
-
-        & > img {
-            cursor: pointer;
-        }
     }
 
     & > div:last-child {

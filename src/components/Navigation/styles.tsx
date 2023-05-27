@@ -125,7 +125,6 @@ export const NavHeader = styled('div')`
     font-weight: 600;
     line-height: 120%;
     font-size: 14px;
-    cursor: pointer;
 
     > svg {
         box-sizing: content-box;

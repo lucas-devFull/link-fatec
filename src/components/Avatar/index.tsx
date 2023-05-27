@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { useAuth } from '../../contexts/auth';
 import { Avatar } from 'primereact/avatar';
 import { IconButton } from '@mui/material';
+import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 type props = {
     click?: React.MouseEventHandler<HTMLDivElement>;
@@ -22,7 +24,12 @@ const Logo = ({ click }: props): JSX.Element => {
         }
 
         return (
-            <Avatar icon={'pi pi-user'} style={{ width: '2.5rem', height: '2.5rem' }} size="normal" shape="circle" />
+            <Avatar
+                icon={<FontAwesomeIcon icon={icon({ name: 'user', style: 'regular' })} />}
+                style={{ padding: '1.3rem' }}
+                size="normal"
+                shape="circle"
+            />
         );
     };
     return (
