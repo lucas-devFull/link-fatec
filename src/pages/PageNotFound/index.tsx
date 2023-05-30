@@ -12,7 +12,7 @@ const PageNotFound = ({ redirectPage = false }: props): JSX.Element => {
         if (logged !== true) {
             setTimeout(() => {
                 window.location.href = '/';
-            }, 1500);
+            }, 1000);
         } else {
             clearTimeout;
         }

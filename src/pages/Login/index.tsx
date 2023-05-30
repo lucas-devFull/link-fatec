@@ -92,7 +92,7 @@ const Login: React.FC = () => {
                                 id=""
                             />
                             <span></span>
-                            <span className="label"> Usuário </span>
+                            <span className="label"> Email </span>
                         </InputLogin>
                     </div>
                     <div>

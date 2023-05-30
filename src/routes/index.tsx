@@ -7,6 +7,8 @@ import { useAuth } from '../contexts/auth';
 
 const Routes: React.FC = () => {
     const { logged } = useAuth();
+    console.log(logged);
+
     return <BrowserRouter>{logged ? <AuthRoutes /> : <GuestRoutes />} </BrowserRouter>;
 };
 

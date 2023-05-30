@@ -6,7 +6,6 @@ import {
     ContainerForm,
     ContainerGrid,
     ContainerInputFile,
-    ContainerLoginPassword,
     ContainerPopUpButton,
     ContainerRegister,
     TitleRegister,
@@ -14,9 +13,7 @@ import {
 import { DataTable } from 'primereact/datatable';
 import { locale, addLocale } from 'primereact/api';
 import { InputText } from 'primereact/inputtext';
-import { Password } from 'primereact/password';
 import { Divider } from 'primereact/divider';
-
 import { Column } from 'primereact/column';
 import { Box, Button, CircularProgress, InputLabel } from '@mui/material';
 import { Dialog } from 'primereact/dialog';
@@ -28,7 +25,7 @@ import { isValidEmail } from '../../../utils';
 import { ReactNotifications, Store } from 'react-notifications-component';
 import { ContainerPreviewImg } from '../Company/style';
 
-type propsFieldsUser = {
+export type propsFieldsUser = {
     id?: number;
     full_name: string;
     name: string;
