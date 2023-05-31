@@ -33,7 +33,7 @@ export function DoughnutChart({ dataChart }: props) {
                 }),
                 datasets: [
                     {
-                        label: 'Vagas Diárias Criadas',
+                        label: 'Alunos Aceitos',
                         data: dataChart.map((dChart) => {
                             return dChart.acceptedStudents;
                         }),

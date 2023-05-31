@@ -27,6 +27,10 @@ export const getRoutesAdmin = () => {
             element: <Dashboard />,
         },
         {
+            path: 'register/company',
+            element: <Company />,
+        },
+        {
             path: '/register/jobs',
             element: <Jobs />,
         },

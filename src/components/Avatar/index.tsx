@@ -13,28 +13,43 @@ const Logo = ({ click }: props): JSX.Element => {
     const [img, setImg] = React.useState<string | null>(null);
 
     useEffect(() => {
-        if (user && user.profile_picture && user.profile_picture !== null) {
+        if (user) {
             setImg(user.profile_picture);
         }
     }, [user]);
 
     const getImgAvatar = () => {
         if (img && img !== null) {
-            return <Avatar style={{ padding: '0.4rem' }} image={img} size="large" shape="circle" />;
+            return (
+                <Avatar
+                    style={{
+                        width: 45,
+                        height: 'auto',
+                        maxHeight: '100%',
+                    }}
+                    image={img}
+                    size="normal"
+                    shape="square"
+                />
+            );
         }
 
         return (
             <Avatar
                 icon={<FontAwesomeIcon icon={icon({ name: 'user', style: 'regular' })} />}
-                style={{ padding: '1.3rem' }}
+                style={{
+                    // padding: '1.3rem',
+                    width: 45,
+                    height: 40,
+                }}
                 size="normal"
-                shape="circle"
+                shape="square"
             />
         );
     };
     return (
         <div onClick={click}>
-            <IconButton>{getImgAvatar()}</IconButton>
+            <IconButton sx={{ padding: '5px' }}>{getImgAvatar()}</IconButton>
         </div>
     );
 };

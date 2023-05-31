@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from '../../services/Api';
 import { DoughnutChart } from '../../components/Charts/ChartJs/DoughnutChart';
 import { BarChart } from '../../components/Charts/ChartJs/BarChart';
+import { useAuth } from '../../contexts/auth';
 
 type dataDashBoard = {
     panel_data: {
@@ -27,6 +28,7 @@ type dataDashBoard = {
 
 const Dashboard: React.FC = () => {
     const navigate = useNavigate();
+    const { user } = useAuth();
     const [dataDashBoard, setDataDashBoard] = useState<dataDashBoard>({
         panel_data: {
             companies: 0,
@@ -59,7 +61,13 @@ const Dashboard: React.FC = () => {
     return (
         <all.ContainerDashboard>
             <all.ContainerCard>
-                <div onClick={() => navigate('/register/courses')}>
+                <div
+                    onClick={() => {
+                        if (user?.login_type == 2) {
+                            navigate('/register/courses');
+                        }
+                    }}
+                >
                     <div>
                         <FontAwesomeIcon size="4x" icon={icon({ name: 'graduation-cap' })} />
                     </div>
@@ -68,7 +76,13 @@ const Dashboard: React.FC = () => {
                     </Card>
                 </div>
 
-                <div onClick={() => navigate('/register/student')}>
+                <div
+                    onClick={() => {
+                        if (user?.login_type == 2) {
+                            navigate('/register/student');
+                        }
+                    }}
+                >
                     <div>
                         <FontAwesomeIcon size="4x" icon={icon({ name: 'users' })} />
                     </div>

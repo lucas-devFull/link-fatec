@@ -27,13 +27,17 @@ const MainLayout = ({ children }: Props): JSX.Element => {
 
     useEffect(() => {
         setDataMenu(getMenu(user?.login_type));
-    }, []);
+    }, [user]);
 
     const getNameIcon = (name: string) => {
         const icons: Record<string, JSX.Element> = {
             house: <FontAwesomeIcon size="lg" icon={icon({ name: 'house' })} />,
             add: <FontAwesomeIcon size="lg" icon={icon({ name: 'circle-plus' })} />,
             briefcase: <FontAwesomeIcon size="lg" icon={icon({ name: 'briefcase' })} />,
+            users: <FontAwesomeIcon size="lg" icon={icon({ name: 'users' })} />,
+            building: <FontAwesomeIcon size="lg" icon={icon({ name: 'building' })} />,
+            user: <FontAwesomeIcon size="lg" icon={icon({ name: 'user' })} />,
+            graduationCap: <FontAwesomeIcon size="lg" icon={icon({ name: 'graduation-cap' })} />,
         };
 
         return icons[name];

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Store } from 'react-notifications-component';
 import { redirect } from 'react-router-dom';
 
-type dataUser = {
+export type dataUser = {
     login_type: string | number;
     name: string;
     id: number;
@@ -20,6 +20,7 @@ interface IAuthContext {
     logged: boolean;
     setLogged: React.Dispatch<React.SetStateAction<boolean>>;
     user: dataUser | null;
+    setUser: React.Dispatch<React.SetStateAction<dataUser | null>>;
     signIn(dataLogin: DataLogin, callback: () => void): void;
     signOut(callback?: () => void): void;
 }
@@ -41,17 +42,22 @@ const AuthProvider = ({ children }: any) => {
         }
     }
 
-    const [user, setUser] = useState<dataUser | null>(null);
-    const [logged, setLogged] = useState<boolean>(localStorage.getItem('token') !== null ? true : false);
+    const storage = localStorage.getItem('token');
+    const userActive = storage == null ? null : JSON.parse(storage).data;
+    const [user, setUser] = useState<dataUser | null>(userActive ? userActive : null);
+    const [logged, setLogged] = useState<boolean>(storage !== null ? true : false);
 
     useEffect(() => {
         const storagedToken = localStorage.getItem('token');
         if (storagedToken) {
             try {
                 const token = JSON.parse(storagedToken);
+                if (token && token.data && user === null) {
+                    setUser(token.data);
+                }
+
                 if (token && token.token && token.token.access_token && !logged) {
                     setAxiosToken(token.token.access_token);
-                    setUser(token.data);
                     setLogged(true);
                 }
             } catch (error) {
@@ -91,7 +97,7 @@ const AuthProvider = ({ children }: any) => {
     };
 
     return (
-        <AuthContext.Provider value={{ logged: logged, setLogged, user, signIn, signOut }}>
+        <AuthContext.Provider value={{ logged: logged, setLogged, user, setUser, signIn, signOut }}>
             {children}
         </AuthContext.Provider>
     );
