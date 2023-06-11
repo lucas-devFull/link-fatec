@@ -61,36 +61,35 @@ const Dashboard: React.FC = () => {
     return (
         <all.ContainerDashboard>
             <all.ContainerCard>
-                <div
-                    onClick={() => {
-                        if (user?.login_type == 2) {
+                {user && user?.login_type == 2 && (
+                    <div
+                        onClick={() => {
                             navigate('/register/courses');
-                        }
-                    }}
-                >
-                    <div>
-                        <FontAwesomeIcon size="4x" icon={icon({ name: 'graduation-cap' })} />
+                        }}
+                    >
+                        <div>
+                            <FontAwesomeIcon size="4x" icon={icon({ name: 'graduation-cap' })} />
+                        </div>
+                        <Card title="Cursos">
+                            <p className="m-0">{dataDashBoard.panel_data.courses}</p>
+                        </Card>
                     </div>
-                    <Card title="Cursos">
-                        <p className="m-0">{dataDashBoard.panel_data.courses}</p>
-                    </Card>
-                </div>
+                )}
 
-                <div
-                    onClick={() => {
-                        if (user?.login_type == 2) {
+                {user && user?.login_type == 2 && (
+                    <div
+                        onClick={() => {
                             navigate('/register/student');
-                        }
-                    }}
-                >
-                    <div>
-                        <FontAwesomeIcon size="4x" icon={icon({ name: 'users' })} />
+                        }}
+                    >
+                        <div>
+                            <FontAwesomeIcon size="4x" icon={icon({ name: 'users' })} />
+                        </div>
+                        <Card title="Alunos">
+                            <p className="m-0">{dataDashBoard.panel_data.students}</p>
+                        </Card>
                     </div>
-                    <Card title="Alunos">
-                        <p className="m-0">{dataDashBoard.panel_data.students}</p>
-                    </Card>
-                </div>
-
+                )}
                 <div onClick={() => navigate('/register/company')}>
                     <div>
                         <FontAwesomeIcon size="4x" icon={icon({ name: 'building' })} />
@@ -99,7 +98,6 @@ const Dashboard: React.FC = () => {
                         <p className="m-0">{dataDashBoard.panel_data.companies}</p>
                     </Card>
                 </div>
-
                 <div onClick={() => navigate('/register/jobs')}>
                     <div>
                         <FontAwesomeIcon size="4x" icon={icon({ name: 'briefcase' })} />

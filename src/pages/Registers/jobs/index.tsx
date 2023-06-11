@@ -235,8 +235,7 @@ const Jobs = () => {
                                 onScreen: true,
                             },
                             onRemoval: () => {
-                                setSelectedProducts(null);
-                                getAllJobs();
+                                resetForm();
                                 Store.removeAllNotifications();
                             },
                         });
@@ -254,8 +253,7 @@ const Jobs = () => {
                             onScreen: true,
                         },
                         onRemoval: () => {
-                            setSelectedProducts(null);
-                            getAllJobs();
+                            resetForm();
                             Store.removeAllNotifications();
                         },
                     });
@@ -349,6 +347,10 @@ const Jobs = () => {
 
     const saveJobs = () => {
         setLoading(true);
+        if (user && user.login_type && user.login_type == 1) {
+            setValue('company_id', user.id);
+        }
+
         const id = watch('id');
         if (id && id !== null && id > 0) {
             axios
@@ -722,14 +724,16 @@ const Jobs = () => {
                         Deletar
                     </Button>
 
-                    <Button
-                        onClick={() => setVisibleModalApplication(true)}
-                        disabled={watch('id') != null ? false : true}
-                        variant="outlined"
-                        color="primary"
-                    >
-                        Ver Candidaturas
-                    </Button>
+                    {user && user.login_type && user.login_type == 1 && (
+                        <Button
+                            onClick={() => setVisibleModalApplication(true)}
+                            disabled={watch('id') != null ? false : true}
+                            variant="outlined"
+                            color="primary"
+                        >
+                            Ver Candidaturas
+                        </Button>
+                    )}
                 </ContainerButtonGrid>
                 <Box sx={{ width: '100%', height: '33rem', padding: '0rem 1.5rem' }}>
                     <DataTable
