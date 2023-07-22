@@ -12,8 +12,6 @@ services:
             - .env
         ports:
             - '${LINK_FATEC_PORT}:3000'
-        volumes:
-            - '.:/app'
         networks:
             - infra-estagio-network
 networks:
