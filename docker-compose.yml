@@ -4,12 +4,13 @@ services:
     fatec-web:
         container_name: 'fatec-web'
         image: node:16
-        command: ['yarn', 'start']
         build:
             context: .
-            dockerfile: ./Dockerfile
+            dockerfile: ./docker/Dockerfile
         env_file:
             - .env
+        volumes:
+            - '.:/app'
         ports:
             - '${LINK_FATEC_PORT}:3000'
         networks:
