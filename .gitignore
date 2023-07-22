@@ -21,3 +21,9 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Ignore .idea directory (for JetBrains IDEs)
+.idea/
+
+# Ignore .vscode directory (for Visual Studio Code)
+.vscode/
