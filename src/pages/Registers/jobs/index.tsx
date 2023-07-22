@@ -724,7 +724,7 @@ const Jobs = () => {
                         Deletar
                     </Button>
 
-                    {user && user.login_type && user.login_type == 1 && (
+                    {user && user.login_type && (user.login_type == 1 ||  user.login_type == 2) && (
                         <Button
                             onClick={() => setVisibleModalApplication(true)}
                             disabled={watch('id') != null ? false : true}
