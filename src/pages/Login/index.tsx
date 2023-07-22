@@ -86,7 +86,7 @@ const Login: React.FC = () => {
                                         email: e.target.value,
                                     })
                                 }
-                                placeholder="input"
+                                placeholder=""
                                 onKeyDown={handleKeyDown}
                                 name=""
                                 id=""
@@ -105,7 +105,7 @@ const Login: React.FC = () => {
                                         password: e.target.value,
                                     })
                                 }
-                                placeholder="input"
+                                placeholder=""
                                 onKeyDown={handleKeyDown}
                                 name=""
                                 id=""
