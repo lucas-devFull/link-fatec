@@ -140,9 +140,15 @@ const Navigation: React.FC<Props> = ({ items, nameUser = 'Lucas Conceição', Ic
     };
 
     const saveProfile = () => {
+        const formData = watch();
+
+        if (!formData.password) {
+            delete formData.password;
+        }
+
         setLoading(true);
         axios
-            .put(`v1/web/profile`, watch())
+            .put(`v1/web/profile`, formData)
             .then((response) => {
                 if (response.status == 200) {
                     Store.addNotification({
