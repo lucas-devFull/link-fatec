@@ -25,7 +25,7 @@ const Navbar: React.FC<Props> = ({ Icon = <LogoImage /> }) => {
     return (
         <ContainerNavbar>
             <div>
-                <img width={'15%'} src={logoHeader} alt="" />
+                <img onClick={() => navigate('/')} width={'15%'} src={logoHeader} alt="" />
             </div>
             <div>
                 <Box sx={{ flexGrow: 0 }}>
