@@ -14,6 +14,11 @@ services:
             - '${LINK_FATEC_PORT}:3000'
         networks:
             - infra-estagio-network
+        labels:
+            - "traefik.http.routers.estagio-fatec-web.rule=Host(`fatec.estagio.com`)"
+            - "traefik.http.routers.estagio-fatec-web.entrypoints=default"
+            - "traefik.docker.network=infra-estagio-network"
+            - "traefik.enable=true"
 networks:
     infra-estagio-network:
         external: true
